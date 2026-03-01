@@ -1,0 +1,1201 @@
+[2026-02-21 20:20:45.651] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-21 20:20:45.839] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 20:20:45.839] Heartbeat: 2026-02-21 20:20
+[2026-02-21 20:20:45.855] [Profile] Test Script 1 using dynamic cost=188
+[2026-02-21 20:20:45.855] [Profile] Test Script 2 using dynamic cost=84
+[2026-02-21 20:20:45.855] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 20:20:45.855] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:20:45.855] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:20:45.948896] Test Script 1 finished!
+[2026-02-21 20:20:45.964524] Test Script 2 finishes!
+[2026-02-21 20:20:46.011] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 20:20:46.011] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=146.5%
+[2026-02-21 20:20:46.011] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 20:20:46.027] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=146.5% -> learned_cost=146
+[2026-02-21 20:20:46.027] Run completed successfully.
+[2026-02-21 20:21:00.111] [Git Pull] (on-demand trigger) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 20:21:00.142] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 20:21:00.142] Heartbeat: 2026-02-21 20:21
+[2026-02-21 20:21:00.142] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 20:21:00.142] [Profile] Test Script 2 using dynamic cost=146
+[2026-02-21 20:21:00.142] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 20:21:00.158] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:21:00.158] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:21:00.241833] Test Script 1 finished!
+[2026-02-21 20:21:00.252851] Test Script 2 finishes!
+[2026-02-21 20:21:00.300] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 20:21:00.300] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 20:21:00.300] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 20:21:00.308] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 20:21:00.308] Run completed successfully.
+[2026-02-21 20:22:00.088] [Git Pull] (on-demand trigger) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 20:22:00.114] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 20:22:00.114] Heartbeat: 2026-02-21 20:22
+[2026-02-21 20:22:00.120] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 20:22:00.120] [Profile] Test Script 2 using dynamic cost=50
+[2026-02-21 20:22:00.120] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 20:22:00.120] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:22:00.120] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:22:00.214762] Test Script 2 finishes!
+[2026-02-21 20:22:00.198524] Test Script 1 finished!
+[2026-02-21 20:22:00.261] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 20:22:00.261] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 20:22:00.261] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 20:22:00.279] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 20:22:00.279] Run completed successfully.
+[2026-02-21 20:23:00.077] [Git Pull] (on-demand trigger) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 20:23:00.093] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 20:23:00.093] Heartbeat: 2026-02-21 20:23
+[2026-02-21 20:23:00.093] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 20:23:00.093] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 20:23:00.093] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 20:23:00.108] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:23:00.108] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 20:23:00.187349] Test Script 1 finished!
+[2026-02-21 20:23:00.187349] Test Script 2 finishes!
+[2026-02-21 20:23:00.237] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 20:23:00.237] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 20:23:00.250] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 20:23:00.250] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 20:23:00.250] Run completed successfully.
+[2026-02-21 22:09:28.733] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-21 22:09:28.812] [Git Pull] (on-demand trigger) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:09:28.859] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:09:28.871] Heartbeat: 2026-02-21 22:09
+[2026-02-21 22:09:28.875] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 22:09:28.875] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:09:28.875] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:09:28.875] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:09:28.875] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:09:28.945751] Test Script 1 finished!
+[2026-02-21 22:09:28.953939] Test Script 2 finishes!
+[2026-02-21 22:09:28.986] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:09:28.986] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:09:28.986] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:09:29.002] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:09:29.006] Run completed successfully.
+[2026-02-21 22:09:29.277] [Git Push] (on-demand trigger) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:09:50.942] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-21 22:09:51.035] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:09:51.035] [Warn] State file C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\sequencer_state.json is unreadable. Resetting it.
+[2026-02-21 22:09:51.035] Heartbeat: 2026-02-21 22:09
+[2026-02-21 22:09:51.035] [Profile] Test Script 1 using dynamic cost=100
+[2026-02-21 22:09:51.035] [Profile] Test Script 2 using dynamic cost=100
+[2026-02-21 22:09:51.035] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:09:51.035] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:09:51.051] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:09:51.114106] Test Script 1 finished!
+[2026-02-21 22:09:51.129737] Test Script 2 finishes!
+[2026-02-21 22:09:51.160] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:09:51.176] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:09:51.176] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:09:51.176] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:09:51.176] Run completed successfully.
+[2026-02-21 22:10:00.032] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:10:00.032] Heartbeat: 2026-02-21 22:10
+[2026-02-21 22:10:00.032] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:10:00.032] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:10:00.032] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:10:00.032] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:10:00.048] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:10:00.111452] Test Script 1 finished!
+[2026-02-21 22:10:00.111452] Test Script 2 finishes!
+[2026-02-21 22:10:00.173] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:10:00.173] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:10:00.173] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:10:00.173] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:10:00.173] Run completed successfully.
+[2026-02-21 22:11:00.037] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:11:00.042] Heartbeat: 2026-02-21 22:11
+[2026-02-21 22:11:00.045] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:11:00.047] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:11:00.048] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:11:00.051] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:11:00.052] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:11:00.107519] Test Script 1 finished!
+[2026-02-21 22:11:00.122035] Test Script 2 finishes!
+[2026-02-21 22:11:00.173] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 22:11:00.175] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:11:00.176] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 22:11:00.180] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:11:00.184] Run completed successfully.
+[2026-02-21 22:12:00.027] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:12:00.027] Heartbeat: 2026-02-21 22:12
+[2026-02-21 22:12:00.027] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 22:12:00.043] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:12:00.043] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:12:00.043] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:12:00.043] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:12:00.105736] Test Script 1 finished!
+[2026-02-21 22:12:00.121359] Test Script 2 finishes!
+[2026-02-21 22:12:00.174] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:12:00.175] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:12:00.177] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:12:00.181] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:12:00.185] Run completed successfully.
+[2026-02-21 22:13:00.023] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:13:00.038] Heartbeat: 2026-02-21 22:13
+[2026-02-21 22:13:00.038] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:13:00.038] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:13:00.038] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:13:00.038] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:13:00.038] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:13:00.101255] Test Script 1 finished!
+[2026-02-21 22:13:00.101255] Test Script 2 finishes!
+[2026-02-21 22:13:00.166] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 22:13:00.168] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:13:00.170] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 22:13:00.173] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:13:00.177] Run completed successfully.
+[2026-02-21 22:15:29.469] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-21 22:15:29.563] [Git Pull] (on-demand trigger) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:15:29.625] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:15:29.625] [Warn] State file C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\sequencer_state.json is unreadable. Resetting it.
+[2026-02-21 22:15:29.625] Heartbeat: 2026-02-21 22:15
+[2026-02-21 22:15:29.625] [Profile] Test Script 1 using dynamic cost=100
+[2026-02-21 22:15:29.641] [Profile] Test Script 2 using dynamic cost=100
+[2026-02-21 22:15:29.641] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:15:29.641] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:15:29.641] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:15:29.719725] Test Script 1 finished!
+[2026-02-21 22:15:29.719725] Test Script 2 finishes!
+[2026-02-21 22:15:29.766] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:15:29.766] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:15:29.766] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:15:29.782] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:15:29.782] Run completed successfully.
+[2026-02-21 22:16:00.023] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:16:00.023] Heartbeat: 2026-02-21 22:16
+[2026-02-21 22:16:00.023] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 22:16:00.039] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:16:00.039] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:16:00.039] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:16:00.039] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:16:00.101630] Test Script 1 finished!
+[2026-02-21 22:16:00.101630] Test Script 2 finishes!
+[2026-02-21 22:16:00.161] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:16:00.162] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:16:00.164] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:16:00.171] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:16:00.175] Run completed successfully.
+[2026-02-21 22:17:00.031] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:17:00.031] Heartbeat: 2026-02-21 22:17
+[2026-02-21 22:17:00.046] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:17:00.046] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:17:00.046] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:17:00.046] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:17:00.046] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:17:00.125768] Test Script 1 finished!
+[2026-02-21 22:17:00.125768] Test Script 2 finishes!
+[2026-02-21 22:17:00.172] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=24.4%
+[2026-02-21 22:17:00.172] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:17:00.172] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=24.4% -> learned_cost=24
+[2026-02-21 22:17:00.192] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:17:00.192] Run completed successfully.
+[2026-02-21 22:18:00.020] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:18:00.020] Heartbeat: 2026-02-21 22:18
+[2026-02-21 22:18:00.020] [Profile] Test Script 1 using dynamic cost=24
+[2026-02-21 22:18:00.020] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:18:00.035] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:18:00.035] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:18:00.035] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:18:00.113766] Test Script 2 finishes!
+[2026-02-21 22:18:00.113766] Test Script 1 finished!
+[2026-02-21 22:18:00.167] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:18:00.168] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:18:00.170] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:18:00.172] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:18:00.172] Run completed successfully.
+[2026-02-21 22:19:00.050] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:19:00.050] Heartbeat: 2026-02-21 22:19
+[2026-02-21 22:19:00.050] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:19:00.050] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 22:19:00.050] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:19:00.065] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:19:00.065] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:19:00.159850] Test Script 1 finished!
+[2026-02-21 22:19:00.159850] Test Script 2 finishes!
+[2026-02-21 22:19:00.238] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:19:00.241] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:19:00.244] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:19:00.249] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:19:00.255] Run completed successfully.
+[2026-02-21 22:20:00.052] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:20:00.052] Heartbeat: 2026-02-21 22:20
+[2026-02-21 22:20:00.052] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:20:00.065] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:20:00.065] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:20:00.065] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:20:00.065] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:20:00.175125] Test Script 2 finishes!
+[2026-02-21 22:20:00.190749] Test Script 1 finished!
+[2026-02-21 22:20:00.269] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:20:00.269] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=83.1%
+[2026-02-21 22:20:00.273] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:20:00.273] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=83.1% -> learned_cost=83
+[2026-02-21 22:20:00.284] Run completed successfully.
+[2026-02-21 22:21:00.047] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:21:00.063] Heartbeat: 2026-02-21 22:21
+[2026-02-21 22:21:00.067] [Profile] Test Script 1 using dynamic cost=83
+[2026-02-21 22:21:00.067] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:21:00.067] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:21:00.067] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:21:00.083] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:21:00.201990] Test Script 1 finished!
+[2026-02-21 22:21:00.201990] Test Script 2 finishes!
+[2026-02-21 22:21:00.267] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:21:00.267] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=195.3%
+[2026-02-21 22:21:00.283] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:21:00.292] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=195.3% -> learned_cost=195
+[2026-02-21 22:21:00.302] Run completed successfully.
+[2026-02-21 22:22:00.129] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:22:00.187] Heartbeat: 2026-02-21 22:22
+[2026-02-21 22:22:00.240] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:22:00.254] [Profile] Test Script 2 using dynamic cost=195
+[2026-02-21 22:22:00.276] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:22:00.283] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:22:00.434] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:22:00.981098] Test Script 1 finished!
+[2026-02-21 22:22:01.159] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=33.5%
+[2026-02-21 22:22:01.214] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=33.5% -> learned_cost=33
+[2026-02-21 22:22:01.220774] Test Script 2 finishes!
+[2026-02-21 22:22:01.354] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=1.9%
+[2026-02-21 22:22:01.388] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=1.9% -> learned_cost=1
+[2026-02-21 22:22:01.507] Run completed successfully.
+[2026-02-21 22:23:00.043] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:23:00.043] Heartbeat: 2026-02-21 22:23
+[2026-02-21 22:23:00.043] [Profile] Test Script 1 using dynamic cost=33
+[2026-02-21 22:23:00.043] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:23:00.043] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:23:00.059] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:23:00.059] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:23:00.137764] Test Script 1 finished!
+[2026-02-21 22:23:00.122140] Test Script 2 finishes!
+[2026-02-21 22:23:00.184] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:23:00.184] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:23:00.184] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:23:00.184] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:23:00.184] Run completed successfully.
+[2026-02-21 22:24:00.041] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:24:00.044] Heartbeat: 2026-02-21 22:24
+[2026-02-21 22:24:00.046] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:24:00.049] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:24:00.051] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:24:00.054] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:24:00.056] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:24:00.135350] Test Script 2 finishes!
+[2026-02-21 22:24:00.135350] Test Script 1 finished!
+[2026-02-21 22:24:00.184] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:24:00.184] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:24:00.184] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:24:00.184] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:24:00.200] Run completed successfully.
+[2026-02-21 22:25:00.033] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:25:00.033] Heartbeat: 2026-02-21 22:25
+[2026-02-21 22:25:00.043] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 22:25:00.045] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:25:00.045] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:25:00.055] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:25:00.055] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:25:00.113160] Test Script 2 finishes!
+[2026-02-21 22:25:00.144] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:25:00.128790] Test Script 1 finished!
+[2026-02-21 22:25:00.175] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:25:00.175] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:25:00.175] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:25:00.175] Run completed successfully.
+[2026-02-21 22:26:00.106] [Git Pull] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:26:00.122] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:26:00.122] Heartbeat: 2026-02-21 22:26
+[2026-02-21 22:26:00.137] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:26:00.137] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:26:00.137] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:26:00.137] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:26:00.137] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:26:00.232098] Test Script 1 finished!
+[2026-02-21 22:26:00.232098] Test Script 2 finishes!
+[2026-02-21 22:26:00.279] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:26:00.279] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:26:00.295] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:26:00.295] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:26:00.311] Run completed successfully.
+[2026-02-21 22:26:00.656] [Git Push] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:27:00.036] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:27:00.050] Heartbeat: 2026-02-21 22:27
+[2026-02-21 22:27:00.052] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:27:00.052] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:27:00.052] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:27:00.052] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:27:00.052] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:27:00.130535] Test Script 1 finished!
+[2026-02-21 22:27:00.130535] Test Script 2 finishes!
+[2026-02-21 22:27:00.209] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:27:00.209] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:27:00.209] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:27:00.224] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:27:00.240] Run completed successfully.
+[2026-02-21 22:28:00.015] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:28:00.030] Heartbeat: 2026-02-21 22:28
+[2026-02-21 22:28:00.030] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:28:00.030] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:28:00.030] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:28:00.030] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:28:00.030] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:28:00.109022] Test Script 2 finishes!
+[2026-02-21 22:28:00.109022] Test Script 1 finished!
+[2026-02-21 22:28:00.171] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:28:00.171] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 22:28:00.187] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:28:00.187] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 22:28:00.187] Run completed successfully.
+[2026-02-21 22:29:00.028] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:29:00.028] Heartbeat: 2026-02-21 22:29
+[2026-02-21 22:29:00.044] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 22:29:00.044] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:29:00.044] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:29:00.044] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:29:00.044] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:29:00.137870] Test Script 2 finishes!
+[2026-02-21 22:29:00.153491] Test Script 1 finished!
+[2026-02-21 22:29:00.201] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:29:00.201] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 22:29:00.214] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:29:00.229] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 22:29:00.236] Run completed successfully.
+[2026-02-21 22:30:00.051] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:30:00.051] Heartbeat: 2026-02-21 22:30
+[2026-02-21 22:30:00.051] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 22:30:00.064] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:30:00.066] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:30:00.070] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:30:00.074] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:30:00.157881] Test Script 1 finished!
+[2026-02-21 22:30:00.165910] Test Script 2 finishes!
+[2026-02-21 22:30:00.211] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:30:00.213] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:30:00.215] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:30:00.219] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:30:00.223] Run completed successfully.
+[2026-02-21 22:31:00.047] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:31:00.047] Heartbeat: 2026-02-21 22:31
+[2026-02-21 22:31:00.065] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:31:00.067] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:31:00.069] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:31:00.073] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:31:00.076] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:31:00.175378] Test Script 1 finished!
+[2026-02-21 22:31:00.176378] Test Script 2 finishes!
+[2026-02-21 22:31:00.232] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 22:31:00.232] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:31:00.232] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 22:31:00.251] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:31:00.257] Run completed successfully.
+[2026-02-21 22:32:00.044] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:32:00.049] Heartbeat: 2026-02-21 22:32
+[2026-02-21 22:32:00.053] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 22:32:00.056] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:32:00.058] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:32:00.064] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:32:00.067] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:32:00.177134] Test Script 2 finishes!
+[2026-02-21 22:32:00.181309] Test Script 1 finished!
+[2026-02-21 22:32:00.255] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:32:00.256] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=33.2%
+[2026-02-21 22:32:00.259] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:32:00.264] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=33.2% -> learned_cost=33
+[2026-02-21 22:32:00.270] Run completed successfully.
+[2026-02-21 22:33:00.056] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:33:00.056] Heartbeat: 2026-02-21 22:33
+[2026-02-21 22:33:00.056] [Profile] Test Script 1 using dynamic cost=33
+[2026-02-21 22:33:00.056] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:33:00.056] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:33:00.076] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:33:00.076] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:33:00.181977] Test Script 1 finished!
+[2026-02-21 22:33:00.181977] Test Script 2 finishes!
+[2026-02-21 22:33:00.244] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:33:00.244] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:33:00.244] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:33:00.260] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:33:00.260] Run completed successfully.
+[2026-02-21 22:34:00.047] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:34:00.051] Heartbeat: 2026-02-21 22:34
+[2026-02-21 22:34:00.054] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 22:34:00.058] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 22:34:00.059] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:34:00.064] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:34:00.066] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:34:00.159135] Test Script 1 finished!
+[2026-02-21 22:34:00.171789] Test Script 2 finishes!
+[2026-02-21 22:34:00.212] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 22:34:00.212] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:34:00.215] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 22:34:00.251] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:34:00.257] Run completed successfully.
+[2026-02-21 22:35:00.045] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:35:00.045] Heartbeat: 2026-02-21 22:35
+[2026-02-21 22:35:00.045] [Profile] Test Script 1 using dynamic cost=50
+[2026-02-21 22:35:00.045] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 22:35:00.060] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:35:00.060] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:35:00.060] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:35:00.155165] Test Script 2 finishes!
+[2026-02-21 22:35:00.155165] Test Script 1 finished!
+[2026-02-21 22:35:00.218] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=97.7%
+[2026-02-21 22:35:00.218] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:35:00.218] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=97.7% -> learned_cost=97
+[2026-02-21 22:35:00.218] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:35:00.218] Run completed successfully.
+[2026-02-21 22:36:00.013] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:36:00.029] Heartbeat: 2026-02-21 22:36
+[2026-02-21 22:36:00.029] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 22:36:00.029] [Profile] Test Script 2 using dynamic cost=97
+[2026-02-21 22:36:00.029] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:36:00.029] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:36:00.029] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:36:00.123929] Test Script 1 finished!
+[2026-02-21 22:36:00.139559] Test Script 2 finishes!
+[2026-02-21 22:36:00.170] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:36:00.170] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:36:00.186] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:36:00.186] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:36:00.202] Run completed successfully.
+[2026-02-21 22:37:00.098] [Git Pull] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:37:00.116] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:37:00.116] Heartbeat: 2026-02-21 22:37
+[2026-02-21 22:37:00.116] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:37:00.131] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:37:00.131] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:37:00.131] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:37:00.131] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:37:00.194145] Test Script 2 finishes!
+[2026-02-21 22:37:00.209766] Test Script 1 finished!
+[2026-02-21 22:37:00.241] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:37:00.241] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:37:00.241] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:37:00.241] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:37:00.256] Run completed successfully.
+[2026-02-21 22:37:00.553] [Git Push] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:38:00.023] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:38:00.023] Heartbeat: 2026-02-21 22:38
+[2026-02-21 22:38:00.023] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:38:00.023] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:38:00.038] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:38:00.038] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:38:00.038] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:38:00.101330] Test Script 1 finished!
+[2026-02-21 22:38:00.101330] Test Script 2 finishes!
+[2026-02-21 22:38:00.148] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:38:00.148] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:38:00.148] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:38:00.148] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:38:00.163] Run completed successfully.
+[2026-02-21 22:39:00.027] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:39:00.043] Heartbeat: 2026-02-21 22:39
+[2026-02-21 22:39:00.043] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:39:00.043] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:39:00.043] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:39:00.043] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:39:00.043] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:39:00.121157] Test Script 1 finished!
+[2026-02-21 22:39:00.137186] Test Script 2 finishes!
+[2026-02-21 22:39:00.168] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:39:00.168] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:39:00.168] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:39:00.184] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:39:00.184] Run completed successfully.
+[2026-02-21 22:40:00.027] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:40:00.027] Heartbeat: 2026-02-21 22:40
+[2026-02-21 22:40:00.027] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:40:00.027] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 22:40:00.027] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:40:00.042] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:40:00.042] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:40:00.136400] Test Script 2 finishes!
+[2026-02-21 22:40:00.136400] Test Script 1 finished!
+[2026-02-21 22:40:00.198] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:40:00.198] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=122.0%
+[2026-02-21 22:40:00.198] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:40:00.198] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=122.0% -> learned_cost=122
+[2026-02-21 22:40:00.198] Run completed successfully.
+[2026-02-21 22:41:00.109] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:41:00.132] Heartbeat: 2026-02-21 22:41
+[2026-02-21 22:41:00.163] [Profile] Test Script 1 using dynamic cost=122
+[2026-02-21 22:41:00.194] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:41:00.194] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:41:00.210] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:41:00.210] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:41:00.398069] Test Script 2 finishes!
+[2026-02-21 22:41:00.398069] Test Script 1 finished!
+[2026-02-21 22:41:00.460] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:41:00.460] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-21 22:41:00.476] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:41:00.476] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:41:00.476] Run completed successfully.
+[2026-02-21 22:42:00.062] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:42:00.062] Heartbeat: 2026-02-21 22:42
+[2026-02-21 22:42:00.062] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:42:00.078] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:42:00.078] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:42:00.078] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:42:00.109] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:42:00.269067] Test Script 1 finished!
+[2026-02-21 22:42:00.345] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=50.4%
+[2026-02-21 22:42:00.360] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 22:42:00.360743] Test Script 2 finishes!
+[2026-02-21 22:42:00.423] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 22:42:00.423] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 22:42:00.423] Run completed successfully.
+[2026-02-21 22:43:00.058] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:43:00.058] Heartbeat: 2026-02-21 22:43
+[2026-02-21 22:43:00.058] [Profile] Test Script 1 using dynamic cost=50
+[2026-02-21 22:43:00.058] [Profile] Test Script 2 using dynamic cost=25
+[2026-02-21 22:43:00.073] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:43:00.073] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:43:00.073] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:43:00.198937] Test Script 2 finishes!
+[2026-02-21 22:43:00.198937] Test Script 1 finished!
+[2026-02-21 22:43:00.261] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:43:00.261] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-21 22:43:00.261] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:43:00.277] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:43:00.277] Run completed successfully.
+[2026-02-21 22:44:00.047] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:44:00.047] Heartbeat: 2026-02-21 22:44
+[2026-02-21 22:44:00.062] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:44:00.062] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 22:44:00.062] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:44:00.062] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:44:00.078] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:44:00.172083] Test Script 1 finished!
+[2026-02-21 22:44:00.188102] Test Script 2 finishes!
+[2026-02-21 22:44:00.235] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 22:44:00.235] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=195.3%
+[2026-02-21 22:44:00.235] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 22:44:00.250] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=195.3% -> learned_cost=195
+[2026-02-21 22:44:00.250] Run completed successfully.
+[2026-02-21 22:45:00.041] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:45:00.041] Heartbeat: 2026-02-21 22:45
+[2026-02-21 22:45:00.041] [Profile] Test Script 1 using dynamic cost=50
+[2026-02-21 22:45:00.041] [Profile] Test Script 2 using dynamic cost=195
+[2026-02-21 22:45:00.041] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:45:00.057] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:45:00.057] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:45:00.148895] Test Script 1 finished!
+[2026-02-21 22:45:00.148895] Test Script 2 finishes!
+[2026-02-21 22:45:00.197] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:45:00.197] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:45:00.213] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:45:00.213] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:45:00.213] Run completed successfully.
+[2026-02-21 22:46:00.039] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:46:00.045] Heartbeat: 2026-02-21 22:46
+[2026-02-21 22:46:00.045] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:46:00.045] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:46:00.045] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:46:00.045] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:46:00.045] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:46:00.139341] Test Script 1 finished!
+[2026-02-21 22:46:00.139341] Test Script 2 finishes!
+[2026-02-21 22:46:00.186] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:46:00.186] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:46:00.186] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:46:00.186] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:46:00.186] Run completed successfully.
+[2026-02-21 22:47:00.036] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:47:00.036] Heartbeat: 2026-02-21 22:47
+[2026-02-21 22:47:00.036] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:47:00.052] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:47:00.052] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:47:00.052] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:47:00.052] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:47:00.145953] Test Script 1 finished!
+[2026-02-21 22:47:00.145953] Test Script 2 finishes!
+[2026-02-21 22:47:00.193] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:47:00.193] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:47:00.193] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:47:00.208] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:47:00.208] Run completed successfully.
+[2026-02-21 22:48:00.123] [Git Pull] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:48:00.139] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:48:00.139] Heartbeat: 2026-02-21 22:48
+[2026-02-21 22:48:00.155] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:48:00.155] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:48:00.155] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:48:00.155] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:48:00.155] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:48:00.248992] Test Script 1 finished!
+[2026-02-21 22:48:00.259626] Test Script 2 finishes!
+[2026-02-21 22:48:00.311] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:48:00.311] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:48:00.311] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:48:00.342] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:48:00.342] Run completed successfully.
+[2026-02-21 22:48:00.796] [Git Push] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:49:00.044] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:49:00.044] Heartbeat: 2026-02-21 22:49
+[2026-02-21 22:49:00.044] [Profile] Test Script 1 using dynamic cost=52
+[2026-02-21 22:49:00.044] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:49:00.044] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:49:00.060] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:49:00.060] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:49:00.152072] Test Script 2 finishes!
+[2026-02-21 22:49:00.160930] Test Script 1 finished!
+[2026-02-21 22:49:00.216] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:49:00.216] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:49:00.216] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:49:00.216] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:49:00.216] Run completed successfully.
+[2026-02-21 22:50:00.030] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:50:00.030] Heartbeat: 2026-02-21 22:50
+[2026-02-21 22:50:00.030] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:50:00.030] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:50:00.030] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:50:00.045] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:50:00.045] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:50:00.155182] Test Script 2 finishes!
+[2026-02-21 22:50:00.171686] Test Script 1 finished!
+[2026-02-21 22:50:00.233] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:50:00.233] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:50:00.233] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:50:00.233] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:50:00.249] Run completed successfully.
+[2026-02-21 22:51:00.047] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:51:00.047] Heartbeat: 2026-02-21 22:51
+[2026-02-21 22:51:00.062] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:51:00.062] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:51:00.062] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:51:00.062] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:51:00.062] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:51:00.156546] Test Script 2 finishes!
+[2026-02-21 22:51:00.172178] Test Script 1 finished!
+[2026-02-21 22:51:00.203] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:51:00.203] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:51:00.219] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:51:00.219] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:51:00.250] Run completed successfully.
+[2026-02-21 22:52:00.043] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:52:00.043] Heartbeat: 2026-02-21 22:52
+[2026-02-21 22:52:00.043] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:52:00.043] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 22:52:00.043] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:52:00.058] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:52:00.058] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:52:00.152892] Test Script 1 finished!
+[2026-02-21 22:52:00.152892] Test Script 2 finishes!
+[2026-02-21 22:52:00.215] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-21 22:52:00.215] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=195.3%
+[2026-02-21 22:52:00.215] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:52:00.231] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=195.3% -> learned_cost=195
+[2026-02-21 22:52:00.231] Run completed successfully.
+[2026-02-21 22:53:00.045] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:53:00.045] Heartbeat: 2026-02-21 22:53
+[2026-02-21 22:53:00.045] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:53:00.045] [Profile] Test Script 2 using dynamic cost=195
+[2026-02-21 22:53:00.060] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:53:00.060] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:53:00.060] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:53:00.170167] Test Script 1 finished!
+[2026-02-21 22:53:00.170167] Test Script 2 finishes!
+[2026-02-21 22:53:00.232] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=33.2%
+[2026-02-21 22:53:00.232] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=24.4%
+[2026-02-21 22:53:00.232] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=33.2% -> learned_cost=33
+[2026-02-21 22:53:00.232] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=24.4% -> learned_cost=24
+[2026-02-21 22:53:00.248] Run completed successfully.
+[2026-02-21 22:54:00.049] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:54:00.049] Heartbeat: 2026-02-21 22:54
+[2026-02-21 22:54:00.056] [Profile] Test Script 1 using dynamic cost=33
+[2026-02-21 22:54:00.056] [Profile] Test Script 2 using dynamic cost=24
+[2026-02-21 22:54:00.056] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:54:00.060] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:54:00.060] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:54:00.138164] Test Script 1 finished!
+[2026-02-21 22:54:00.138164] Test Script 2 finishes!
+[2026-02-21 22:54:00.185] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:54:00.185] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:54:00.185] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:54:00.185] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:54:00.201] Run completed successfully.
+[2026-02-21 22:55:00.045] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:55:00.045] Heartbeat: 2026-02-21 22:55
+[2026-02-21 22:55:00.045] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:55:00.045] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:55:00.045] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:55:00.045] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:55:00.045] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:55:00.139854] Test Script 2 finishes!
+[2026-02-21 22:55:00.139854] Test Script 1 finished!
+[2026-02-21 22:55:00.186] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:55:00.186] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:55:00.186] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:55:00.186] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:55:00.186] Run completed successfully.
+[2026-02-21 22:56:00.046] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:56:00.051] Heartbeat: 2026-02-21 22:56
+[2026-02-21 22:56:00.051] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:56:00.056] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:56:00.056] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:56:00.062] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:56:00.062] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:56:00.140755] Test Script 2 finishes!
+[2026-02-21 22:56:00.140755] Test Script 1 finished!
+[2026-02-21 22:56:00.203] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:56:00.203] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:56:00.203] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:56:00.203] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:56:00.218] Run completed successfully.
+[2026-02-21 22:57:00.042] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:57:00.042] Heartbeat: 2026-02-21 22:57
+[2026-02-21 22:57:00.042] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 22:57:00.057] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:57:00.057] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:57:00.057] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:57:00.057] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:57:00.136082] Test Script 2 finishes!
+[2026-02-21 22:57:00.151723] Test Script 1 finished!
+[2026-02-21 22:57:00.198] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:57:00.214] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=24.4%
+[2026-02-21 22:57:00.214] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:57:00.214] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=24.4% -> learned_cost=24
+[2026-02-21 22:57:00.214] Run completed successfully.
+[2026-02-21 22:58:00.025] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:58:00.037] Heartbeat: 2026-02-21 22:58
+[2026-02-21 22:58:00.037] [Profile] Test Script 1 using dynamic cost=24
+[2026-02-21 22:58:00.037] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 22:58:00.037] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:58:00.037] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:58:00.037] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:58:00.116203] Test Script 1 finished!
+[2026-02-21 22:58:00.147453] Test Script 2 finishes!
+[2026-02-21 22:58:00.194] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 22:58:00.194] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:58:00.194] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 22:58:00.225] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:58:00.241] Run completed successfully.
+[2026-02-21 22:59:00.100] [Git Pull] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 22:59:00.116] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 22:59:00.116] Heartbeat: 2026-02-21 22:59
+[2026-02-21 22:59:00.116] [Profile] Test Script 1 using dynamic cost=52
+[2026-02-21 22:59:00.116] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 22:59:00.116] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 22:59:00.132] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:59:00.132] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 22:59:00.210268] Test Script 1 finished!
+[2026-02-21 22:59:00.210268] Test Script 2 finishes!
+[2026-02-21 22:59:00.272] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 22:59:00.272] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 22:59:00.272] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 22:59:00.304] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 22:59:00.304] Run completed successfully.
+[2026-02-21 22:59:00.632] [Git Push] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 23:00:00.037] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:00:00.037] Heartbeat: 2026-02-21 23:00
+[2026-02-21 23:00:00.037] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 23:00:00.037] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:00:00.037] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:00:00.052] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:00:00.052] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:00:00.130791] Test Script 2 finishes!
+[2026-02-21 23:00:00.130791] Test Script 1 finished!
+[2026-02-21 23:00:00.177] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:00:00.177] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 23:00:00.177] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:00:00.193] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 23:00:00.193] Run completed successfully.
+[2026-02-21 23:01:00.024] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:01:00.024] Heartbeat: 2026-02-21 23:01
+[2026-02-21 23:01:00.024] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 23:01:00.040] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 23:01:00.040] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:01:00.040] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:01:00.040] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:01:00.134247] Test Script 1 finished!
+[2026-02-21 23:01:00.134247] Test Script 2 finishes!
+[2026-02-21 23:01:00.181] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:01:00.181] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:01:00.181] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:01:00.196] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:01:00.196] Run completed successfully.
+[2026-02-21 23:02:00.053] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:02:00.053] Heartbeat: 2026-02-21 23:02
+[2026-02-21 23:02:00.053] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:02:00.053] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 23:02:00.069] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:02:00.069] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:02:00.097] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:02:00.216408] Test Script 1 finished!
+[2026-02-21 23:02:00.234928] Test Script 2 finishes!
+[2026-02-21 23:02:00.283] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 23:02:00.285] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:02:00.288] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 23:02:00.323] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:02:00.323] Run completed successfully.
+[2026-02-21 23:03:00.035] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:03:00.037] Heartbeat: 2026-02-21 23:03
+[2026-02-21 23:03:00.039] [Profile] Test Script 1 using dynamic cost=50
+[2026-02-21 23:03:00.041] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:03:00.043] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:03:00.046] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:03:00.048] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:03:00.115790] Test Script 2 finishes!
+[2026-02-21 23:03:00.115790] Test Script 1 finished!
+[2026-02-21 23:03:00.165] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:03:00.167] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:03:00.168] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:03:00.170] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:03:00.173] Run completed successfully.
+[2026-02-21 23:04:00.041] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:04:00.044] Heartbeat: 2026-02-21 23:04
+[2026-02-21 23:04:00.047] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:04:00.050] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 23:04:00.052] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:04:00.055] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:04:00.056] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:04:00.135950] Test Script 2 finishes!
+[2026-02-21 23:04:00.135950] Test Script 1 finished!
+[2026-02-21 23:04:00.184] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=24.4%
+[2026-02-21 23:04:00.185] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:04:00.187] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=24.4% -> learned_cost=24
+[2026-02-21 23:04:00.190] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:04:00.194] Run completed successfully.
+[2026-02-21 23:05:00.034] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:05:00.049] Heartbeat: 2026-02-21 23:05
+[2026-02-21 23:05:00.049] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:05:00.049] [Profile] Test Script 2 using dynamic cost=24
+[2026-02-21 23:05:00.049] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:05:00.065] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:05:00.065] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:05:00.174677] Test Script 2 finishes!
+[2026-02-21 23:05:00.174677] Test Script 1 finished!
+[2026-02-21 23:05:00.237] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:05:00.237] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=33.2%
+[2026-02-21 23:05:00.237] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:05:00.237] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=33.2% -> learned_cost=33
+[2026-02-21 23:05:00.253] Run completed successfully.
+[2026-02-21 23:06:00.050] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:06:00.054] Heartbeat: 2026-02-21 23:06
+[2026-02-21 23:06:00.060] [Profile] Test Script 1 using dynamic cost=33
+[2026-02-21 23:06:00.067] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:06:00.069] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:06:00.075] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:06:00.077] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:06:00.212147] Test Script 2 finishes!
+[2026-02-21 23:06:00.212147] Test Script 1 finished!
+[2026-02-21 23:06:00.306] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=146.5%
+[2026-02-21 23:06:00.306] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 23:06:00.306] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=146.5% -> learned_cost=146
+[2026-02-21 23:06:00.306] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 23:06:00.321] Run completed successfully.
+[2026-02-21 23:07:00.027] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:07:00.027] Heartbeat: 2026-02-21 23:07
+[2026-02-21 23:07:00.027] [Profile] Test Script 1 using dynamic cost=50
+[2026-02-21 23:07:00.027] [Profile] Test Script 2 using dynamic cost=146
+[2026-02-21 23:07:00.027] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:07:00.027] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:07:00.042] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:07:00.121100] Test Script 2 finishes!
+[2026-02-21 23:07:00.121100] Test Script 1 finished!
+[2026-02-21 23:07:00.188] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 23:07:00.189] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:07:00.192] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 23:07:00.196] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:07:00.200] Run completed successfully.
+[2026-02-21 23:08:00.035] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:08:00.037] Heartbeat: 2026-02-21 23:08
+[2026-02-21 23:08:00.040] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:08:00.043] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 23:08:00.044] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:08:00.045] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:08:00.045] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:08:00.111452] Test Script 1 finished!
+[2026-02-21 23:08:00.123466] Test Script 2 finishes!
+[2026-02-21 23:08:00.170] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 23:08:00.170] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:08:00.170] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 23:08:00.170] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:08:00.170] Run completed successfully.
+[2026-02-21 23:09:00.099] [Git Pull] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 23:09:00.113] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:09:00.116] Heartbeat: 2026-02-21 23:09
+[2026-02-21 23:09:00.118] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 23:09:00.120] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:09:00.121] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:09:00.124] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:09:00.126] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:09:00.201925] Test Script 2 finishes!
+[2026-02-21 23:09:00.204926] Test Script 1 finished!
+[2026-02-21 23:09:00.255] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:09:00.256] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-21 23:09:00.258] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:09:00.262] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:09:00.277] Run completed successfully.
+[2026-02-21 23:10:00.033] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:10:00.036] Heartbeat: 2026-02-21 23:10
+[2026-02-21 23:10:00.038] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:10:00.040] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:10:00.041] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:10:00.045] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:10:00.046] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:10:00.130935] Test Script 2 finishes!
+[2026-02-21 23:10:00.148360] Test Script 1 finished!
+[2026-02-21 23:10:00.196] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 23:10:00.196] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=66.5%
+[2026-02-21 23:10:00.196] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 23:10:00.196] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=66.5% -> learned_cost=66
+[2026-02-21 23:10:00.196] Run completed successfully.
+[2026-02-21 23:10:00.533] [Git Push] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 23:11:00.037] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:11:00.037] Heartbeat: 2026-02-21 23:11
+[2026-02-21 23:11:00.053] [Profile] Test Script 1 using dynamic cost=66
+[2026-02-21 23:11:00.053] [Profile] Test Script 2 using dynamic cost=52
+[2026-02-21 23:11:00.053] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:11:00.053] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:11:00.053] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:11:00.147050] Test Script 1 finished!
+[2026-02-21 23:11:00.147050] Test Script 2 finishes!
+[2026-02-21 23:11:00.209] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=24.4%
+[2026-02-21 23:11:00.209] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:11:00.209] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=24.4% -> learned_cost=24
+[2026-02-21 23:11:00.209] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:11:00.225] Run completed successfully.
+[2026-02-21 23:12:00.038] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:12:00.038] Heartbeat: 2026-02-21 23:12
+[2026-02-21 23:12:00.038] [Profile] Test Script 1 using dynamic cost=24
+[2026-02-21 23:12:00.038] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:12:00.054] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:12:00.054] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:12:00.054] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:12:00.147816] Test Script 2 finishes!
+[2026-02-21 23:12:00.147816] Test Script 1 finished!
+[2026-02-21 23:12:00.194] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:12:00.194] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:12:00.194] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:12:00.210] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:12:00.210] Run completed successfully.
+[2026-02-21 23:13:00.048] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:13:00.048] Heartbeat: 2026-02-21 23:13
+[2026-02-21 23:13:00.048] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 23:13:00.048] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:13:00.048] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:13:00.063] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:13:00.063] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:13:00.157724] Test Script 2 finishes!
+[2026-02-21 23:13:00.150667] Test Script 1 finished!
+[2026-02-21 23:13:00.204] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:13:00.204] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:13:00.204] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:13:00.220] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:13:00.220] Run completed successfully.
+[2026-02-21 23:14:00.043] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:14:00.043] Heartbeat: 2026-02-21 23:14
+[2026-02-21 23:14:00.043] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 23:14:00.043] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:14:00.043] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:14:00.043] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:14:00.043] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:14:00.121586] Test Script 2 finishes!
+[2026-02-21 23:14:00.121586] Test Script 1 finished!
+[2026-02-21 23:14:00.184] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:14:00.184] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=49.9%
+[2026-02-21 23:14:00.184] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:14:00.184] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=49.9% -> learned_cost=49
+[2026-02-21 23:14:00.184] Run completed successfully.
+[2026-02-21 23:15:00.032] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:15:00.032] Heartbeat: 2026-02-21 23:15
+[2026-02-21 23:15:00.032] [Profile] Test Script 1 using dynamic cost=49
+[2026-02-21 23:15:00.032] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 23:15:00.048] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:15:00.048] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:15:00.048] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:15:00.110778] Test Script 1 finished!
+[2026-02-21 23:15:00.126405] Test Script 2 finishes!
+[2026-02-21 23:15:00.157] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 23:15:00.157] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:15:00.157] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 23:15:00.157] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:15:00.173] Run completed successfully.
+[2026-02-21 23:16:00.086] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:16:00.095] Heartbeat: 2026-02-21 23:16
+[2026-02-21 23:16:00.098] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-21 23:16:00.100] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:16:00.102] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:16:00.105] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:16:00.108] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:16:00.210018] Test Script 2 finishes!
+[2026-02-21 23:16:00.252] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:16:00.255] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:16:00.247694] Test Script 1 finished!
+[2026-02-21 23:16:00.288] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:16:00.292] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:16:00.296] Run completed successfully.
+[2026-02-21 23:17:00.030] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:17:00.030] Heartbeat: 2026-02-21 23:17
+[2026-02-21 23:17:00.030] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 23:17:00.030] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:17:00.030] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:17:00.030] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:17:00.046] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:17:00.140858] Test Script 1 finished!
+[2026-02-21 23:17:00.156491] Test Script 2 finishes!
+[2026-02-21 23:17:00.218] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 23:17:00.218] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:17:00.218] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 23:17:00.234] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:17:00.250] Run completed successfully.
+[2026-02-21 23:18:00.087] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:18:00.087] Heartbeat: 2026-02-21 23:18
+[2026-02-21 23:18:00.087] [Profile] Test Script 1 using dynamic cost=50
+[2026-02-21 23:18:00.103] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 23:18:00.103] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:18:00.103] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:18:00.103] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:18:00.243685] Test Script 2 finishes!
+[2026-02-21 23:18:00.279472] Test Script 1 finished!
+[2026-02-21 23:18:00.337] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=100.8%
+[2026-02-21 23:18:00.337] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=48.9%
+[2026-02-21 23:18:00.337] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=100.8% -> learned_cost=100
+[2026-02-21 23:18:00.353] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:18:00.353] Run completed successfully.
+[2026-02-21 23:19:00.161] [Git Pull] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 23:19:00.190] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:19:00.190] Heartbeat: 2026-02-21 23:19
+[2026-02-21 23:19:00.190] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-21 23:19:00.190] [Profile] Test Script 2 using dynamic cost=100
+[2026-02-21 23:19:00.205] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:19:00.205] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:19:00.205] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:19:00.330702] Test Script 1 finished!
+[2026-02-21 23:19:00.330702] Test Script 2 finishes!
+[2026-02-21 23:19:00.408] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:19:00.408] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:19:00.425] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:19:00.425] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:19:00.425] Run completed successfully.
+[2026-02-21 23:20:00.043] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:20:00.043] Heartbeat: 2026-02-21 23:20
+[2026-02-21 23:20:00.043] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:20:00.043] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 23:20:00.058] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:20:00.058] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:20:00.058] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:20:00.152639] Test Script 1 finished!
+[2026-02-21 23:20:00.168271] Test Script 2 finishes!
+[2026-02-21 23:20:00.215] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:20:00.215] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=146.5%
+[2026-02-21 23:20:00.215] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:20:00.230] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=146.5% -> learned_cost=146
+[2026-02-21 23:20:00.230] Run completed successfully.
+[2026-02-21 23:20:00.589] [Git Push] (scheduled) failed: fatal: not a git repository (or any of the parent directories): .git
+[2026-02-21 23:21:00.035] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:21:00.035] Heartbeat: 2026-02-21 23:21
+[2026-02-21 23:21:00.051] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:21:00.051] [Profile] Test Script 2 using dynamic cost=146
+[2026-02-21 23:21:00.051] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:21:00.051] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:21:00.051] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:21:00.145092] Test Script 2 finishes!
+[2026-02-21 23:21:00.145092] Test Script 1 finished!
+[2026-02-21 23:21:00.223] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:21:00.226] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=97.7%
+[2026-02-21 23:21:00.228] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:21:00.248] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=97.7% -> learned_cost=97
+[2026-02-21 23:21:00.252] Run completed successfully.
+[2026-02-21 23:22:00.013] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:22:00.013] Heartbeat: 2026-02-21 23:22
+[2026-02-21 23:22:00.029] [Profile] Test Script 1 using dynamic cost=97
+[2026-02-21 23:22:00.029] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:22:00.029] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:22:00.029] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:22:00.029] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:22:00.092403] Test Script 1 finished!
+[2026-02-21 23:22:00.092403] Test Script 2 finishes!
+[2026-02-21 23:22:00.136] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:22:00.136] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=48.9%
+[2026-02-21 23:22:00.144] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:22:00.144] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=48.9% -> learned_cost=48
+[2026-02-21 23:22:00.144] Run completed successfully.
+[2026-02-21 23:23:00.027] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:23:00.027] Heartbeat: 2026-02-21 23:23
+[2026-02-21 23:23:00.043] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:23:00.043] [Profile] Test Script 2 using dynamic cost=48
+[2026-02-21 23:23:00.043] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:23:00.043] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:23:00.043] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:23:00.090273] Test Script 1 finished!
+[2026-02-21 23:23:00.121526] Test Script 2 finishes!
+[2026-02-21 23:23:00.152] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=52.1%
+[2026-02-21 23:23:00.152] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:23:00.152] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=52.1% -> learned_cost=52
+[2026-02-21 23:23:00.152] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:23:00.152] Run completed successfully.
+[2026-02-21 23:24:00.041] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:24:00.041] Heartbeat: 2026-02-21 23:24
+[2026-02-21 23:24:00.041] [Profile] Test Script 1 using dynamic cost=52
+[2026-02-21 23:24:00.041] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:24:00.057] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:24:00.057] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:24:00.057] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:24:00.135518] Test Script 2 finishes!
+[2026-02-21 23:24:00.135518] Test Script 1 finished!
+[2026-02-21 23:24:00.182] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:24:00.182] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=50.4%
+[2026-02-21 23:24:00.182] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:24:00.182] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=50.4% -> learned_cost=50
+[2026-02-21 23:24:00.182] Run completed successfully.
+[2026-02-21 23:25:00.041] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:25:00.041] Heartbeat: 2026-02-21 23:25
+[2026-02-21 23:25:00.056] [Profile] Test Script 1 using dynamic cost=50
+[2026-02-21 23:25:00.056] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:25:00.056] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:25:00.056] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:25:00.056] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:25:00.181704] Test Script 1 finished!
+[2026-02-21 23:25:00.181704] Test Script 2 finishes!
+[2026-02-21 23:25:00.259] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:25:00.259] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=156.2%
+[2026-02-21 23:25:00.259] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:25:00.275] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=156.2% -> learned_cost=156
+[2026-02-21 23:25:00.275] Run completed successfully.
+[2026-02-21 23:26:00.038] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:26:00.038] Heartbeat: 2026-02-21 23:26
+[2026-02-21 23:26:00.054] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:26:00.054] [Profile] Test Script 2 using dynamic cost=156
+[2026-02-21 23:26:00.054] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:26:00.054] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:26:00.054] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:26:00.164110] Test Script 1 finished!
+[2026-02-21 23:26:00.164110] Test Script 2 finishes!
+[2026-02-21 23:26:00.247] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:26:00.252] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:26:00.252] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:26:00.260] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:26:00.260] Run completed successfully.
+[2026-02-21 23:47:35.601] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-21 23:47:35.790] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:47:35.790] Heartbeat: 2026-02-21 23:47
+[2026-02-21 23:47:35.796] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:47:35.796] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:47:35.796] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:47:35.803] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:47:35.805] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:47:35.902455] Test Script 2 finishes!
+[2026-02-21 23:47:35.915730] Test Script 1 finished!
+[2026-02-21 23:47:35.963] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:47:35.964] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:47:35.966] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:47:35.970] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:47:35.975] Run completed successfully.
+[2026-02-21 23:48:00.031] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-21 23:48:00.031] Heartbeat: 2026-02-21 23:48
+[2026-02-21 23:48:00.031] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-21 23:48:00.031] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-21 23:48:00.031] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-21 23:48:00.047] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:48:00.047] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-21 23:48:00.109845] Test Script 2 finishes!
+[2026-02-21 23:48:00.109845] Test Script 1 finished!
+[2026-02-21 23:48:00.180] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-21 23:48:00.181] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-21 23:48:00.183] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-21 23:48:00.187] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-21 23:48:00.191] Run completed successfully.

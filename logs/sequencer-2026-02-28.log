@@ -1,0 +1,170 @@
+[2026-02-28 11:02:22.850] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-28 11:02:23.002] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 11:02:23.018] Heartbeat: 2026-02-28 11:02
+[2026-02-28 11:02:23.018] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 11:02:23.035] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-28 11:02:23.035] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 11:02:23.035] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-28 11:02:23.035] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\AppData\Local\Programs\Python\Python312\python.exe)
+[2026-02-28 11:02:23.118846] Test Script 2 finishes!
+[2026-02-28 11:02:23.118846] Test Script 1 finished!
+[2026-02-28 11:02:23.168] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-28 11:02:23.168] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=25.2%
+[2026-02-28 11:02:23.168] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:02:23.168] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=25.2% -> learned_cost=25
+[2026-02-28 11:02:23.186] Run completed successfully.
+[2026-02-28 11:48:46.896] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 11:48:47.395] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 11:48:47.428] Heartbeat: 2026-02-28 11:48
+[2026-02-28 11:48:47.428] [Profile] Test Script 1 using dynamic cost=25
+[2026-02-28 11:48:47.428] [Profile] Test Script 2 using dynamic cost=100
+[2026-02-28 11:48:47.428] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 11:48:47.443] [Dry Run] Would execute: Test Script 1 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test1.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 11:48:47.447] [Dry Run] Would execute: Test Script 2 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 11:48:47.478] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:48:47.478] [Profile] Test Script 2: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:48:47.489] Run completed successfully.
+[2026-02-28 11:50:53.501] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 11:50:56.699] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-02-28 11:50:56.768] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 11:50:56.772] Heartbeat: 2026-02-28 11:50
+[2026-02-28 11:50:56.775] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 11:50:56.779] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-28 11:50:56.781] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 11:50:56.787] [Dry Run] Would execute: Test Script 1 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test1.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 11:50:56.788] [Dry Run] Would execute: Test Script 2 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\test2.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 11:50:56.790] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:50:56.794] [Profile] Test Script 2: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:50:56.799] Run completed successfully.
+[2026-02-28 11:54:01.349] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 11:54:03.416] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-02-28 11:54:03.469] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 11:54:03.469] Heartbeat: 2026-02-28 11:54
+[2026-02-28 11:54:03.469] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 11:54:03.477] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-28 11:54:03.477] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 11:54:03.477] [Dry Run] Would execute: Test Script 1 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test1.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 11:54:03.477] [Dry Run] Would execute: Test Script 2 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\test2.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 11:54:03.485] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:54:03.485] [Profile] Test Script 2: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:54:03.485] Run completed successfully.
+[2026-02-28 11:57:04.417] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 11:57:06.256] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-02-28 11:57:06.308] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 11:57:06.308] Heartbeat: 2026-02-28 11:57
+[2026-02-28 11:57:06.308] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 11:57:06.308] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-28 11:57:06.316] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 11:57:06.316] [Dry Run] Would execute: Test Script 1 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test1.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 11:57:06.316] [Dry Run] Would execute: Test Script 2 -> C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\test2.py (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 11:57:06.316] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:57:06.324] [Profile] Test Script 2: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 11:57:06.324] Run completed successfully.
+[2026-02-28 12:11:42.777] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 12:11:42.840] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-02-28 12:11:42.840] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-28 12:11:42.965] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 12:11:42.981] Heartbeat: 2026-02-28 12:11
+[2026-02-28 12:11:42.981] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 12:11:42.997] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-28 12:11:42.997] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 12:11:42.997] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 12:11:42.997] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 12:11:43.075737] Test Script 1 finished!
+[2026-02-28 12:11:43.106] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-28 12:11:43.122] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 12:11:44.302] [Success] Test Script 2 completed. peak_ram=0.3% avg_cpu=2.3%
+[2026-02-28 12:11:44.302] [Profile] Test Script 2: peak_ram=0.3% avg_cpu=2.3% -> learned_cost=2
+[2026-02-28 12:11:44.302] Run completed successfully.
+[2026-02-28 12:12:00.043] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 12:12:00.043] Heartbeat: 2026-02-28 12:12
+[2026-02-28 12:12:00.043] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 12:12:00.059] [Profile] Test Script 2 using dynamic cost=2
+[2026-02-28 12:12:00.059] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 12:12:00.074] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 12:12:00.074] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 12:12:00.153456] Test Script 1 finished!
+[2026-02-28 12:12:00.185] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=48.9%
+[2026-02-28 12:12:00.185] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=48.9% -> learned_cost=48
+[2026-02-28 12:12:00.451] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-28 12:12:00.451] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 12:12:00.451] Run completed successfully.
+[2026-02-28 12:13:02.366] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 12:13:02.429] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-02-28 12:13:02.444] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-28 12:13:02.491] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 12:13:02.507] Heartbeat: 2026-02-28 12:13
+[2026-02-28 12:13:02.507] [Profile] Test Script 1 using dynamic cost=48
+[2026-02-28 12:13:02.507] [Profile] Test Script 2 using dynamic cost=100
+[2026-02-28 12:13:02.507] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 12:13:02.523] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 12:13:02.523] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 12:13:02.603065] Test Script 1 finished!
+[2026-02-28 12:13:02.649] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-28 12:13:02.649] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 12:13:02.947] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-28 12:13:02.947] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 12:13:02.947] Run completed successfully.
+[2026-02-28 12:18:15.620] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 12:18:15.699] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-02-28 12:18:15.699] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-28 12:18:15.730] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 12:18:15.746] Heartbeat: 2026-02-28 12:18
+[2026-02-28 12:18:15.746] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 12:18:15.762] [Profile] Test Script 2 using dynamic cost=100
+[2026-02-28 12:18:15.762] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 12:18:15.762] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 12:18:15.762] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 12:18:15.824991] Test Script 1 finished!
+[2026-02-28 12:18:15.887] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-28 12:18:15.887] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-02-28 12:18:16.091736 | Success |
++--------------------------------------+
+[2026-02-28 12:18:16.163] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-28 12:18:16.163] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 12:18:16.163] Run completed successfully.
+[2026-02-28 12:19:00.000] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 12:19:00.013] Heartbeat: 2026-02-28 12:19
+[2026-02-28 12:19:00.013] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 12:19:00.013] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-28 12:19:00.013] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 12:19:00.013] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 12:19:00.013] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 12:19:00.107859] Test Script 1 finished!
+[2026-02-28 12:19:00.139] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-28 12:19:00.139] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-02-28 12:19:00.311871 | Success |
++--------------------------------------+
+[2026-02-28 12:19:00.374] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-02-28 12:19:00.374] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 12:19:00.374] Run completed successfully.
+[2026-02-28 19:18:40.494] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-02-28 19:18:40.594] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-02-28 19:18:40.594] Starting daemon mode. Scheduler ticks run on minute boundaries.
+[2026-02-28 19:18:40.696] Parallel mode enabled (use_workers=1). max_workers=600
+[2026-02-28 19:18:40.716] Heartbeat: 2026-02-28 19:18
+[2026-02-28 19:18:40.719] [Profile] Test Script 1 using dynamic cost=1
+[2026-02-28 19:18:40.723] [Profile] Test Script 2 using dynamic cost=1
+[2026-02-28 19:18:40.726] Executing 2 task(s) with slot capacity=600 and thread_workers=2.
+[2026-02-28 19:18:40.729] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-02-28 19:18:40.731] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-02-28 19:18:40.810157] Test Script 1 finished!
+[2026-02-28 19:18:40.860] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-02-28 19:18:40.860] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-02-28 19:18:41.409658 | Success |
++--------------------------------------+
+[2026-02-28 19:18:41.486] [Success] Test Script 2 completed. peak_ram=0.3% avg_cpu=0.0%
+[2026-02-28 19:18:41.487] [Profile] Test Script 2: peak_ram=0.3% avg_cpu=0.0% -> learned_cost=1
+[2026-02-28 19:18:41.490] Run completed successfully.

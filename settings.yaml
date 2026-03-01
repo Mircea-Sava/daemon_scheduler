@@ -1,0 +1,38 @@
+settings:
+  retry_delay_seconds: 60
+  use_workers: 1               # 0 = sequential, 1 = parallel (auto-profile via psutil)
+# If 0 runs tasks one at a time
+# If 1 runs tasks in parallel with auto-profiled worker costs (stored in sequencer_state.json under profiling)
+  
+  max_workers: "auto-2 * 100"  # e.g. (8 - 2) * 100 = 600 where 100 = 1 logical processor
+  default_worker_cost: 100  # Default cost for new/unprofiled scripts. Can also set to "auto-2 * 100"
+  state_file: "sequencer_state.json"
+  log_task_output: true            # true = capture and log script, false = discard
+  
+  git_pull_interval_minutes: 10    # 0 = disabled. Also supports on-demand pull via monitor dashboard.
+  git_push_interval_minutes: 10    # 0 = disabled. Commits & pushes state + logs. Also supports on-demand push via monitor dashboard.
+  
+  failure_email:
+    enabled: False
+    to: "mirceasava51@yahoo.ca"
+    cc: ""
+    subject: "Sequencer Task Failed: {task_name}"
+    body: |
+      Task '{task_name}' failed. It will keep retrying automatically.
+
+      Time: {timestamp}
+      Script: {script_path}
+  
+  heartbeat_email:
+    enabled: False
+    hours: 5,12,17,0 # Comma-seperated, 0-23
+    to: "mirceasava51@yahoo.ca"
+    cc: ""
+    subject: "I'm ALIVE — {timestamp}"
+    body: |
+      The sequencer is still running.
+
+      Time: {timestamp}
+
+      In Progress:
+      {in_progress}

@@ -1,0 +1,7 @@
+[project]
+name = "test2-project"
+version = "1.0.0"
+requires-python = ">=3.11"
+dependencies = [
+    "rich==12.0.0",
+]

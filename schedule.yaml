@@ -1,0 +1,79 @@
+# === Schedule fields ===
+# month:         optional, 1-12 comma-separated. Default: all months.
+# month_day:     optional, 1-31 comma-separated. Default: all days.
+# week_day:      optional, 1-7 (1=Mon, 7=Sun) comma-separated.
+#                Ignored if month_day is specified (use one or the other).
+# start_hour:    optional, 0-23. If blank, runs every tick on matching days.
+# start_minute:  optional, 0-59. Default: 0.
+# frequency_min: optional. Repeats every N minutes from start_hour:start_minute.
+#                If blank, runs only once at start_hour:start_minute.
+# end_hour:      optional, 0-23. If omitted, repeats non-stop.
+# end_minute:    optional, 0-59. Default: 0.
+#
+# Optional per-task fields:
+# - python: optional Python interpreter override per task. e.g. python: python39
+#   Defaults to the sequencer's own Python if omitted.
+#
+# === Examples ===
+#
+#  Run every tick, every day (no filters = every tick):
+#  - id: "always"
+#    path: "scripts/always.py"
+#
+#  Run every 30 mins, every day:
+#  - id: "always"
+#    path: "scripts/always.py"
+#    frequency_min: 30
+#
+#  Run every tick on weekdays only (no start_hour = every tick):
+#  - id: "weekday-tick"
+#    path: "scripts/tick.py"
+#    week_day: 1,2,3,4,5
+#
+#  Run once daily at 9:00 AM:
+#  - id: "daily-9am"
+#    path: "scripts/daily.py"
+#    start_hour: 9
+#    start_minute: 0
+#
+#  Run every 30 min from 9:00 to 18:00 on weekdays:
+#  - id: "every-30min"
+#    path: "scripts/interval.py"
+#    week_day: 1,2,3,4,5
+#    start_hour: 9
+#    start_minute: 0
+#    frequency_min: 30
+#    end_hour: 18
+#    end_minute: 0
+#
+#  Run every 30 min non-stop on weekdays (no end_hour):
+#  - id: "every-30min"
+#    path: "scripts/interval.py"
+#    week_day: 1,2,3,4,5
+#    start_hour: 9
+#    start_minute: 0
+#    frequency_min: 30
+#
+#  Run on the 1st of every month at 6:00 AM:
+#  - id: "monthly-first"
+#    path: "scripts/monthly.py"
+#    month_day: 1
+#    start_hour: 6
+#
+#  Run on Dec 31 at 23:59 (yearly):
+#  - id: "yearly-dec31"
+#    path: "scripts/yearly.py"
+#    month: 12
+#    month_day: 31
+#    start_hour: 23
+#    start_minute: 59
+
+tasks:
+  - id: "Test Script 1"
+    path: "test1.py"
+    frequency_min: 1
+
+  - id: "Test Script 2"
+    path: "test2_project/test2.py"
+    frequency_min: 1
+
