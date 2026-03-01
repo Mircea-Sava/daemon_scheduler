@@ -1,7 +1,5 @@
 .venv/
 __pycache__/
 *.pyc
-
-# Explicitly track portable tooling
-!bin/uv.exe
-!vendor/**
+.git_pull_now
+.git_push_now
