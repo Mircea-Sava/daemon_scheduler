@@ -1,6 +1,6 @@
 # Scheduler
 
-A portable, offline Python task scheduler. Clone the repo, double-click a `.bat` file, and it runs your scripts on a schedule -- forever.
+A portable, offline Python task scheduler. Clone the repo, double-click a `.bat` file, and it runs your scripts on a schedule. Forever.
 
 ---
 
@@ -8,30 +8,32 @@ A portable, offline Python task scheduler. Clone the repo, double-click a `.bat`
 
 This project was built around a specific set of constraints:
 
-- **The scheduler laptop has no internet.** It sits on a restrictive company network (no PyPI, no downloads). Everything it needs must be bundled in the repo.
-- **The laptop has no Python installed.** No Python, no pip, no libraries. The repo ships its own interpreters and packages.
-- **No database is accessible.** IT restrictions block database access, so all state and memory management uses flat JSON files committed to the repo.
-- **The scheduler never stops.** It runs 24/7 in daemon mode (a program that loops forever in the background). If the laptop crashes or restarts for an OS update, it recovers automatically -- picking up where it left off using persisted state.
-- **The laptop must not overheat.** The scheduler uses zero CPU while idle (event-driven sleep with OS-level blocking waits). It only wakes when a task is due or a command arrives.
-- **Developers push code remotely.** They have internet access and push scripts to the remote repo. The scheduler laptop pulls changes on a timer.
-- **It must be easy.** Write a script, add one entry to `schedule.yaml`, push. Done.
+- **The scheduler laptop has no internet.** It sits on a restrictive company network where nothing can be downloaded. Everything the scheduler needs is bundled inside the repo.
+- **The laptop has no Python installed.** The repo ships its own copy of Python and all required libraries. This also makes the scheduler fully transferable. If the laptop breaks, clone the repo on a new machine and it runs identically.
+- **No database is accessible.** IT restrictions block database access, so all data is stored in simple files (JSON and YAML) inside the repo.
+- **The scheduler never stops.** It runs 24/7 in the background. If the laptop crashes or restarts, it recovers automatically, picking up where it left off.
+- **The laptop must not overheat.** The scheduler sleeps when there's nothing to do and only wakes up when a task is due. Zero CPU usage while idle.
+- **Developers push code remotely.** They write scripts on their own machines and push to a shared git repo. The scheduler laptop pulls changes automatically.
+- **It must be easy.** Write a script, add one line to `schedule.yaml`, push. Done.
 
 ## Features
 
-- **Fully offline** -- all dependencies pre-downloaded as `.whl` files in `vendor/`, installs without internet
-- **Fully portable** -- clone on any Windows laptop and run, nothing to install (Python + package manager bundled)
-- **Event-driven sleep** -- calculates next job time and sleeps with zero CPU, wakes instantly on monitor commands via UDP
-- **Crash recovery** -- persists state to `sequencer_state.json`, resumes in-progress tasks after restart
-- **Smart git sync** -- smart pull (fetch + check, only pulls when remote has changes), instant push after each task completes
-- **Parallel execution** -- runs tasks concurrently with auto-profiled CPU/RAM cost balancing
-- **Auto-retry with exponential backoff** -- failed tasks retry with doubling delays (60s, 120s, 240s, ..., capped at 30 min)
-- **Task dependencies** -- `depends_on` ensures tasks run only after their dependencies succeed
-- **Task timeout** -- `timeout_minutes` kills scripts that hang longer than expected
-- **Pause/resume from dashboard** -- pause and resume individual tasks from the monitor without editing config
-- **Run now from dashboard** -- trigger any task to run immediately from the monitor, regardless of schedule
-- **Multi-Python** -- subprojects can use different Python versions and isolated dependencies
-- **Live dashboard** -- real-time terminal monitor showing task status, profiling, today's schedule, and git sync state
-- **Email alerts** -- optional failure notifications and heartbeat emails
+- **Fully offline.** Works without internet, all libraries are pre-downloaded and bundled.
+- **Fully portable.** Clone on any Windows laptop and run, nothing to install.
+- **Zero CPU while idle.** Sleeps until the next task is due, wakes instantly when needed.
+- **Crash recovery.** Remembers what was running and picks up where it left off after a restart.
+- **Smart git sync.** Only pulls when there are actual changes, pushes results immediately after each task.
+- **Parallel execution.** Runs multiple tasks at the same time, automatically balances CPU and memory usage.
+- **Auto-retry.** If a task fails, it retries automatically with increasing wait times (1 min, 2 min, 4 min, ..., up to 30 min).
+- **Task dependencies.** Make one task wait for another to finish before it runs.
+- **Task timeout.** Automatically kills scripts that run too long.
+- **Multiple run times.** Schedule a task at specific times like `"9:00, 14:00, 17:30"` in one entry.
+- **Pause/resume.** Pause and resume individual tasks from the dashboard without editing config.
+- **Run now.** Trigger any task to run immediately from the dashboard, regardless of schedule.
+- **Multi-Python.** Different scripts can use different Python versions and libraries.
+- **Live dashboard.** Real-time terminal view showing task status, resource usage, schedule, and git sync state.
+- **Email alerts.** Optional notifications when tasks fail or to confirm the scheduler is still alive.
+- **Schedule checker.** Double-click `check_schedule.bat` to verify when a task will run before you push.
 
 ## Quick Start
 
@@ -39,7 +41,7 @@ This project was built around a specific set of constraints:
 
 ```
 git clone <repo URL>
-developer_prep.bat              # one-time: vendors wheels + downloads Python
+developer_prep.bat              # one-time setup: downloads Python + libraries
 ```
 
 Then write your script, add it to `schedule.yaml`, and push:
@@ -54,7 +56,7 @@ git push
 
 ```
 git clone <repo URL>
-run_sequencer.bat               # bootstraps automatically, runs forever
+run_sequencer.bat               # starts automatically, runs forever
 ```
 
 That's it. No Python install, no pip, no setup.
@@ -63,48 +65,52 @@ That's it. No Python install, no pip, no setup.
 
 ```
 repo/
-  sequencer.py            # The scheduler engine (daemon mode)
+  sequencer.py            # The scheduler engine
   monitor.py              # Live terminal dashboard
   schedule.yaml           # What to run and when
   settings.yaml           # Global config (parallelism, git sync, email)
-  pyproject.toml          # Root project dependencies + Python version
-  developer_prep.bat      # Dev setup: vendors wheels + downloads Python
+  pyproject.toml          # Project dependencies + Python version
+  developer_prep.bat      # Dev setup script
   run_sequencer.bat       # Starts the scheduler
   run_monitor.bat         # Starts the dashboard
+  check_schedule.bat      # Check when a task will run
+  check_schedule.py       # Schedule checker script
   bin/
-    uv.exe                # Bundled package manager (no Python needed to run it)
-    python/               # Bundled portable Python interpreters
-  vendor/                 # Pre-downloaded .whl packages (offline install)
-  logs/                   # Daily log files (auto-pushed to remote)
-  sequencer_state.json    # Runtime state (auto-pushed to remote)
+    uv.exe                # Bundled package manager
+    python/               # Bundled Python interpreters
+  vendor/                 # Pre-downloaded libraries (offline install)
+  logs/                   # Daily log files
+  sequencer_state.json    # Runtime state
 ```
 
-Scripts can live at the root (e.g. `test1.py`) or in subprojects with their own dependencies (e.g. `test2_project/`).
+Scripts can live at the root (e.g. `test1.py`), in a `scripts/` folder for organization, or in subprojects with their own dependencies (e.g. `test2_project/`).
 
 ## How It Works
 
 ```
 DEVELOPER                      REMOTE REPO                SCHEDULER LAPTOP
----------                      -----                      ----------------
+---------                      -----------                ----------------
 
-Write scripts         --->   git push   --->          Smart pull (fetch + check)
-Update schedule.yaml                                    Re-sync packages
-Vendor new wheels                                       Run tasks on schedule
+Write scripts         --->   git push   --->          Pulls changes automatically
+Add to schedule.yaml                                    Installs new libraries
+Bundle libraries                                        Runs tasks on schedule
 
-                                                        Push after each task completes
-git pull              <---   git pull   <---          Push state + logs
+                                                        Pushes after each task
+git pull              <---   git pull   <---          Sends back logs + state
 Check logs/
-Check state
+Check results
 ```
 
-The scheduler uses event-driven sleep: it calculates exactly when the next task fires and sleeps until then (zero CPU while idle). The monitor communicates with the sequencer via UDP on `127.0.0.1:19876` for instant command delivery. Git uses **smart pull** (fetches first, only pulls when remote has new commits) and **pushes immediately after each task completes** so developers see results in near-real-time. For the full breakdown, see **[HOW_IT_WORKS.md](HOW_IT_WORKS.md)**.
+Developers write scripts and push them to a shared git repo. The scheduler laptop pulls changes on a timer, runs tasks according to `schedule.yaml`, and pushes results (logs and state) back to the repo so developers can check on things remotely.
+
+For the full technical breakdown, see **[HOW_IT_WORKS.md](HOW_IT_WORKS.md)**.
 
 ## Requirements
 
 **Just git.** Everything else is in the repo.
 
-| Component | Bundled in repo | Notes |
-|-----------|----------------|-------|
-| Python    | `bin/python/`  | Portable interpreters, no system install needed |
-| Package manager | `bin/uv.exe` | Replaces pip, written in Rust, runs without Python |
-| Libraries | `vendor/*.whl` | Pre-downloaded wheels, installed offline |
+| Component | Where | What it does |
+|-----------|-------|-------------|
+| Python | `bin/python/` | Runs your scripts (no install needed) |
+| Package manager | `bin/uv.exe` | Installs libraries from bundled files |
+| Libraries | `vendor/` | Pre-downloaded, works offline |
