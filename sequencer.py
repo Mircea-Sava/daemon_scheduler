@@ -12,7 +12,6 @@ import subprocess
 import sys
 import threading
 import queue
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
@@ -798,21 +797,6 @@ def configure_log_runtime(config_path: Path, settings: dict[str, Any]) -> None:
         _LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def positive_int_or_default(value: Any, field_name: str, default: int = 1) -> int | str:
-    if value is None:
-        return default
-    if isinstance(value, str) and value.strip().endswith("%"):
-        return value.strip()
-    try:
-        parsed = int(value)
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"`{field_name}` must be an integer or percentage.") from exc
-    if parsed < 1:
-        raise ValueError(f"`{field_name}` must be >= 1.")
-    return parsed
-
-
-
 def parse_worker_setting(value: Any, default: int = 4) -> int:
     return max(1, to_int(value, default))
 
@@ -1108,6 +1092,30 @@ def validate_task(task: Any, index: int) -> dict[str, Any]:
             and task_copy["_start_hour"] > task_copy["_end_hour"]):
         raise ValueError(f"Task `{name}`: `start_hour` must be <= `end_hour`.")
 
+    # times: optional, list of "HH:MM" strings for running at multiple specific times
+    raw_times = task.get("times")
+    if raw_times is not None:
+        if isinstance(raw_times, str):
+            parts = [t.strip() for t in raw_times.split(",") if t.strip()]
+        elif isinstance(raw_times, list):
+            parts = [str(t).strip() for t in raw_times if str(t).strip()]
+        else:
+            raise ValueError(f"Task `{name}`: `times` must be a string or list of \"HH:MM\" values.")
+        parsed_times: list[tuple[int, int]] = []
+        for t in parts:
+            if ":" not in t:
+                raise ValueError(f"Task `{name}`: invalid time `{t}` in `times` (expected HH:MM).")
+            h_str, m_str = t.split(":", 1)
+            h, m = to_int(h_str, -1), to_int(m_str, -1)
+            if not (0 <= h <= 23) or not (0 <= m <= 59):
+                raise ValueError(f"Task `{name}`: invalid time `{t}` in `times`.")
+            parsed_times.append((h, m))
+        if task_copy["_start_hour"] is not None or task_copy["_frequency_min"] is not None:
+            raise ValueError(f"Task `{name}`: `times` cannot be combined with `start_hour`/`frequency_min`.")
+        task_copy["_times"] = parsed_times
+    else:
+        task_copy["_times"] = None
+
     # Task dependencies.
     depends_on = task.get("depends_on")
     if depends_on is not None:
@@ -1153,7 +1161,12 @@ def should_run(task: dict[str, Any], now: dt.datetime) -> bool:
         if now.weekday() not in week_day:
             return False
 
-    # 3. Time logic
+    # 3. Times shorthand — multiple specific times in one entry
+    times = task.get("_times")
+    if times is not None:
+        return any(now.hour == h and now.minute == m for h, m in times)
+
+    # 4. Time logic
     start_hour = task.get("_start_hour")
     start_minute = task.get("_start_minute", 0)
     frequency_min = task.get("_frequency_min")

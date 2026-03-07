@@ -12,33 +12,35 @@
 # end_minute:    optional, 0-59. Default: 0.
 # depends_on:    optional. List of task IDs that must succeed first in the
 #                same slot before this task runs. e.g. depends_on: "task-A"
+# times:          optional. Comma-separated "HH:MM" values for multiple specific
+#                 run times in one entry. Cannot be combined with start_hour/frequency_min.
 # timeout_minutes: optional. Kill the script if it runs longer than N minutes.
 #
 # === Examples ===
 #
 #  Run every tick, every day (no filters = every tick):
-#  - id: "always"
-#    path: "scripts/always.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #
 #  Run every 30 mins, every day:
-#  - id: "always"
-#    path: "scripts/always.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #    frequency_min: 30
 #
 #  Run every tick on weekdays only (no start_hour = every tick):
-#  - id: "weekday-tick"
-#    path: "scripts/tick.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #    week_day: 1,2,3,4,5
 #
 #  Run once daily at 9:00 AM:
-#  - id: "daily-9am"
-#    path: "scripts/daily.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #    start_hour: 9
 #    start_minute: 0
 #
 #  Run every 30 min from 9:00 to 18:00 on weekdays:
-#  - id: "every-30min"
-#    path: "scripts/interval.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #    week_day: 1,2,3,4,5
 #    start_hour: 9
 #    start_minute: 0
@@ -47,33 +49,39 @@
 #    end_minute: 0
 #
 #  Run every 30 min non-stop on weekdays (no end_hour):
-#  - id: "every-30min"
-#    path: "scripts/interval.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #    week_day: 1,2,3,4,5
 #    start_hour: 9
 #    start_minute: 0
 #    frequency_min: 30
 #
 #  Run on the 1st of every month at 6:00 AM:
-#  - id: "monthly-first"
-#    path: "scripts/monthly.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #    month_day: 1
 #    start_hour: 6
 #
 #  Run on Dec 31 at 23:59 (yearly):
-#  - id: "yearly-dec31"
-#    path: "scripts/yearly.py"
+#  - id: "test"
+#    path: "scripts/test.py"
 #    month: 12
 #    month_day: 31
 #    start_hour: 23
 #    start_minute: 59
 #
-#  Run daily at 9:30, only after "daily-9am" succeeds, kill after 10 min:
-#  - id: "post-daily"
-#    path: "scripts/post_daily.py"
+#  Run at 9:00, 14:00, and 17:30 on weekdays:
+#  - id: "test"
+#    path: "scripts/test.py"
+#    times: "9:00, 14:00, 17:30"
+#    week_day: 1,2,3,4,5
+#
+#  Run daily at 9:30, only after "task-A" succeeds, kill after 10 min:
+#  - id: "test"
+#    path: "scripts/test.py"
 #    start_hour: 9
 #    start_minute: 30
-#    depends_on: "daily-9am"
+#    depends_on: "task-A"
 #    timeout_minutes: 10
 
 tasks:

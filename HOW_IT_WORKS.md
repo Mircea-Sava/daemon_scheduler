@@ -91,8 +91,23 @@ Developers write Python scripts, configure when they run, and push to the remote
    | `frequency_min`   | Repeat every N minutes (if blank, runs once)     |
    | `end_hour`        | 0-23 (if omitted, repeats non-stop)              |
    | `end_minute`      | 0-59 (default: 0)                                |
+   | `times`           | Comma-separated `HH:MM` values for multiple specific run times (e.g. `"9:00, 14:00, 17:30"`). Cannot be combined with `start_hour`/`frequency_min`. |
    | `depends_on`      | Task ID(s) that must succeed first (e.g. `"task-A"` or `"task-A, task-B"`) |
    | `timeout_minutes` | Kill the script if it runs longer than N minutes |
+
+   **Coming from cron?** Most schedulers use **cron syntax** -- a compact five-field format invented for Unix in the 1970s. A cron expression like `*/30 9-17 * * 1-5` means "every 30 minutes from 9 to 17 on weekdays." The five fields are `minute hour day-of-month month day-of-week`, where `*` means "any" and `/` means "every." It's powerful but cryptic -- even experienced developers have to look up the field order.
+
+   This scheduler uses plain YAML fields instead. The same expression becomes `start_hour: 9, frequency_min: 30, end_hour: 17, week_day: 1,2,3,4,5` -- readable without a reference sheet. Here's how to translate common cron patterns:
+
+   | Cron expression | What it means | schedule.yaml equivalent |
+   |-----------------|---------------|--------------------------|
+   | `*/30 * * * *` | Every 30 min, all day | `frequency_min: 30` |
+   | `0 9 * * *` | Once daily at 9:00 AM | `start_hour: 9` |
+   | `0 9 * * 1-5` | 9:00 AM on weekdays | `start_hour: 9` + `week_day: 1,2,3,4,5` |
+   | `*/30 9-17 * * 1-5` | Every 30 min, 9-17, weekdays | `start_hour: 9, frequency_min: 30, end_hour: 17, week_day: 1,2,3,4,5` |
+   | `0 9,14,17 * * *` | 9:00, 14:00, 17:00 daily | `times: "9:00, 14:00, 17:00"` |
+   | `0 6 1 * *` | 6:00 AM on 1st of month | `start_hour: 6, month_day: 1` |
+   | `59 23 31 12 *` | Dec 31 at 23:59 | `start_hour: 23, start_minute: 59, month: 12, month_day: 31` |
 
 5. **Push to the remote repo**:
    ```
@@ -465,6 +480,16 @@ Notes:
 - If the task is currently paused, the run-now request is ignored. Unpause it first.
 - If the task is already running or already queued for this tick, the request is ignored (no duplicate runs).
 - The task runs with all the same behavior as a scheduled run: profiling, timeout, logging, etc.
+
+## Can I run non-Python scripts?
+
+This is a Python scheduler -- it bundles Python interpreters, manages Python virtual environments, and installs Python packages. That said, you can run other languages with some workarounds:
+
+- **Compiled executables** (Rust, C++, Go) -- compile on your dev machine and commit the `.exe` to the repo. Point `path` at it in `schedule.yaml`. The scheduler would need a small code change to detect non-`.py` files and run them directly instead of through a Python interpreter.
+- **JavaScript** -- you'd need to bundle `node.exe` in `bin/` (similar to how Python is bundled) and add bootstrap logic for npm packages.
+- **Batch/PowerShell** -- same idea, detect the extension and run natively.
+
+Full multi-language support (downloading compilers, managing non-Python dependencies) is possible but adds significant complexity for minimal benefit. For now, if you need another language, the simplest approach is to compile it into an `.exe` and commit it, or wrap it in a Python script using `subprocess`.
 
 ## How does crash recovery work?
 
