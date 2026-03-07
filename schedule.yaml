@@ -3,16 +3,16 @@
 # month_day:     optional, 1-31 comma-separated. Default: all days.
 # week_day:      optional, 1-7 (1=Mon, 7=Sun) comma-separated.
 #                Ignored if month_day is specified (use one or the other).
-# start_hour:    optional, 0-23. If blank, runs every tick on matching days.
+# start_hour:    optional, 0-23. If blank and no frequency_min, runs every tick.
+#                Defaults to 0 (midnight) when frequency_min is set.
 # start_minute:  optional, 0-59. Default: 0.
 # frequency_min: optional. Repeats every N minutes from start_hour:start_minute.
 #                If blank, runs only once at start_hour:start_minute.
 # end_hour:      optional, 0-23. If omitted, repeats non-stop.
 # end_minute:    optional, 0-59. Default: 0.
-#
-# Optional per-task fields:
-# - python: optional Python interpreter override per task. e.g. python: python39
-#   Defaults to the sequencer's own Python if omitted.
+# depends_on:    optional. List of task IDs that must succeed first in the
+#                same slot before this task runs. e.g. depends_on: "task-A"
+# timeout_minutes: optional. Kill the script if it runs longer than N minutes.
 #
 # === Examples ===
 #
@@ -67,6 +67,14 @@
 #    month_day: 31
 #    start_hour: 23
 #    start_minute: 59
+#
+#  Run daily at 9:30, only after "daily-9am" succeeds, kill after 10 min:
+#  - id: "post-daily"
+#    path: "scripts/post_daily.py"
+#    start_hour: 9
+#    start_minute: 30
+#    depends_on: "daily-9am"
+#    timeout_minutes: 10
 
 tasks:
   - id: "Test Script 1"

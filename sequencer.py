@@ -5,12 +5,13 @@ from __future__ import annotations
 import argparse
 import calendar
 import datetime as dt
-import hashlib
 import json
 import os
+import socket
 import subprocess
 import sys
 import threading
+import queue
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -287,6 +288,97 @@ class WorkerSlotLimiter:
             self._condition.notify_all()
 
 
+class SchedulerContext:
+    """Persistent state that survives across daemon ticks."""
+
+    def __init__(self, state_path: Path, max_workers: int) -> None:
+        self.state_path = state_path
+        self.max_workers = max_workers
+        self.state: dict[str, Any] = load_state(state_path)
+        self.last_triggered_slot: dict[str, Any] = self.state["last_triggered_slot"]
+        self.in_progress: dict[str, Any] = self.state["in_progress"]
+        self.profiling: dict[str, Any] = self.state["profiling"]
+        self.state_lock = threading.Lock()
+        self.wake_event = threading.Event()
+        self.git_wake_event = threading.Event()
+        self.command_queue: queue.Queue[str] = queue.Queue()
+        self.slot_limiter = WorkerSlotLimiter(max_workers)
+        self.actively_running: set[str] = set()
+        self._executor = ThreadPoolExecutor(
+            max_workers=max_workers,
+            thread_name_prefix="seq-worker",
+        )
+
+    def shutdown(self, wait: bool = True) -> None:
+        self._executor.shutdown(wait=wait)
+
+    def mark_task_started(
+        self,
+        key: str,
+        task_name: str,
+        script_path: Path,
+        worker_cost: int,
+        slot_key_value: str,
+        is_recovery: bool,
+    ) -> None:
+        with self.state_lock:
+            self.in_progress[key] = {
+                "task_name": task_name,
+                "script_path": str(script_path),
+                "worker_cost": worker_cost,
+                "slot_key": slot_key_value,
+                "started_at": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "is_recovery": is_recovery,
+            }
+            save_state(self.state_path, self.state)
+
+    def mark_task_finished(self, key: str, slot_key_value: str, success: bool) -> None:
+        with self.state_lock:
+            self.in_progress.pop(key, None)
+            self.actively_running.discard(key)
+            now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            prev = self.last_triggered_slot.get(key)
+            prev_count = prev.get("retry_count", 0) if isinstance(prev, dict) else 0
+            self.last_triggered_slot[key] = {
+                "slot": slot_key_value,
+                "last_run": now_str,
+                "outcome": "success" if success else "failure",
+                "retry_count": 0 if success else prev_count + 1,
+            }
+            save_state(self.state_path, self.state)
+        # Trigger immediate git push so logs + state reach remote fast.
+        self.command_queue.put("push")
+        self.git_wake_event.set()
+
+    def clear_recovery_entry(self, key: str) -> None:
+        with self.state_lock:
+            if key in self.in_progress:
+                self.in_progress.pop(key, None)
+                save_state(self.state_path, self.state)
+
+    def mark_slot_consumed_without_run(self, key: str, slot_key_value: str) -> None:
+        with self.state_lock:
+            self.in_progress.pop(key, None)
+            now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.last_triggered_slot[key] = {
+                "slot": slot_key_value,
+                "last_run": now_str,
+                "outcome": "skipped",
+            }
+            save_state(self.state_path, self.state)
+
+    def get_last_slot(self, key: str) -> str | None:
+        entry = self.last_triggered_slot.get(key)
+        if isinstance(entry, dict):
+            return str(entry.get("slot", "")) or None
+        if isinstance(entry, str):
+            return entry
+        return None
+
+    def is_task_actively_running(self, key: str) -> bool:
+        return key in self.actively_running
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run Python scripts based on a YAML schedule."
@@ -295,14 +387,6 @@ def parse_args() -> argparse.Namespace:
         "--config",
         default="schedule.yaml",
         help="Path to YAML schedule file (default: schedule.yaml).",
-    )
-    parser.add_argument(
-        "--state-file",
-        default=None,
-        help=(
-            "Path to scheduler state file. "
-            "Overrides `settings.state_file` from YAML."
-        ),
     )
     parser.add_argument(
         "--now",
@@ -382,23 +466,36 @@ def is_within_task_window(task: dict[str, Any], now: dt.datetime) -> bool:
     return True
 
 
-def sleep_until_next_minute_boundary() -> None:
-    now = dt.datetime.now()
-    next_minute = now.replace(second=0, microsecond=0) + dt.timedelta(minutes=1)
-    # Guard against sub-second wake-ups: only return after crossing the boundary.
-    while True:
-        delay_seconds = (next_minute - dt.datetime.now()).total_seconds()
-        if delay_seconds <= 0:
-            return
-        time.sleep(min(delay_seconds, 0.2))
-
 
 GIT_PULL_TRIGGER = ".git_pull_now"
 
 
-def git_pull(repo_dir: Path) -> str:
-    """Run ``git pull`` in *repo_dir* and return a short status string."""
+def _git_remote_has_changes(repo_dir: Path) -> bool:
+    """Return True if the remote branch has commits not in the local branch."""
     try:
+        subprocess.run(
+            ["git", "fetch"],
+            cwd=str(repo_dir),
+            capture_output=True,
+            timeout=120,
+        )
+        result = subprocess.run(
+            ["git", "rev-list", "HEAD..@{u}", "--count"],
+            cwd=str(repo_dir),
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        return result.returncode == 0 and int(result.stdout.strip() or "0") > 0
+    except Exception:
+        return True  # on error, pull anyway to be safe
+
+
+def git_pull(repo_dir: Path) -> str:
+    """Pull only when the remote has new commits.  Returns a short status string."""
+    try:
+        if not _git_remote_has_changes(repo_dir):
+            return "no changes"
         result = subprocess.run(
             ["git", "pull"],
             cwd=str(repo_dir),
@@ -410,8 +507,6 @@ def git_pull(repo_dir: Path) -> str:
         if result.returncode != 0:
             err = (result.stderr or "").strip()
             return f"failed: {err or output}"
-        if "Already up to date" in output:
-            return "no changes"
         return f"updated: {output.splitlines()[0] if output else 'ok'}"
     except subprocess.TimeoutExpired:
         return "failed: timeout"
@@ -425,17 +520,20 @@ def maybe_git_pull(
     config_path: Path,
     last_pull_time: dt.datetime | None,
     interval_minutes: int,
-) -> dt.datetime | None:
-    """Pull if the interval has elapsed or a trigger file exists.
+    triggered: bool = False,
+) -> tuple[dt.datetime | None, bool]:
+    """Pull if the interval has elapsed or *triggered* is True.
 
-    Returns the new last-pull timestamp, or *last_pull_time* unchanged.
+    Returns ``(new_last_pull_time, files_changed)`` where *files_changed*
+    is True only when ``git pull`` actually updated files.
     """
     repo_dir = config_path.parent
-    trigger_file = repo_dir / GIT_PULL_TRIGGER
     now = dt.datetime.now()
 
-    triggered = trigger_file.exists()
-    if triggered:
+    # Also check for leftover trigger file (backward compatibility).
+    trigger_file = repo_dir / GIT_PULL_TRIGGER
+    if trigger_file.exists():
+        triggered = True
         try:
             trigger_file.unlink()
         except OSError:
@@ -447,15 +545,21 @@ def maybe_git_pull(
     )
 
     if not triggered and not interval_elapsed:
-        return last_pull_time
+        return last_pull_time, False
 
-    reason = "on-demand trigger" if triggered else "scheduled"
+    reason = "on-demand" if triggered else "scheduled"
     status = git_pull(repo_dir)
     log(f"[Git Pull] ({reason}) {status}")
-    return now
+    return now, status.startswith("updated")
 
 
 GIT_PUSH_TRIGGER = ".git_push_now"
+
+PAUSE_TRIGGER_PREFIX = ".pause_task_"
+UNPAUSE_TRIGGER_PREFIX = ".unpause_task_"
+RUN_TRIGGER_PREFIX = ".run_task_"
+
+WAKE_UDP_PORT = 19876
 
 # Files the push helper will commit (relative to repo root).
 GIT_PUSH_PATHS = [
@@ -514,17 +618,19 @@ def maybe_git_push(
     config_path: Path,
     last_push_time: dt.datetime | None,
     interval_minutes: int,
+    triggered: bool = False,
 ) -> dt.datetime | None:
-    """Push if the interval has elapsed or a trigger file exists.
+    """Push if the interval has elapsed or *triggered* is True.
 
     Returns the new last-push timestamp, or *last_push_time* unchanged.
     """
     repo_dir = config_path.parent
-    trigger_file = repo_dir / GIT_PUSH_TRIGGER
     now = dt.datetime.now()
 
-    triggered = trigger_file.exists()
-    if triggered:
+    # Also check for leftover trigger file (backward compatibility).
+    trigger_file = repo_dir / GIT_PUSH_TRIGGER
+    if trigger_file.exists():
+        triggered = True
         try:
             trigger_file.unlink()
         except OSError:
@@ -538,10 +644,83 @@ def maybe_git_push(
     if not triggered and not interval_elapsed:
         return last_push_time
 
-    reason = "on-demand trigger" if triggered else "scheduled"
+    reason = "on-demand" if triggered else "scheduled"
     status = git_push(repo_dir)
     log(f"[Git Push] ({reason}) {status}")
     return now
+
+
+def process_commands(cmd_queue: queue.Queue[str], state: dict) -> set[str]:
+    """Drain queued commands from the UDP listener.
+
+    Handles pause:<id>, unpause:<id>, and run:<id> commands.
+    Returns a set of task IDs that should run immediately.
+    """
+    paused: list[str] = state.setdefault("paused_tasks", [])
+    run_now: set[str] = set()
+    while True:
+        try:
+            cmd = cmd_queue.get_nowait()
+        except queue.Empty:
+            break
+        if cmd.startswith("pause:"):
+            task_id = cmd[6:]
+            if task_id not in paused:
+                paused.append(task_id)
+                log(f"[Pause] Task `{task_id}` paused.")
+        elif cmd.startswith("unpause:"):
+            task_id = cmd[8:]
+            if task_id in paused:
+                paused.remove(task_id)
+                log(f"[Resume] Task `{task_id}` resumed.")
+        elif cmd.startswith("run:"):
+            task_id = cmd[4:]
+            run_now.add(task_id)
+            log(f"[Run Now] Task `{task_id}` queued for immediate run.")
+    return run_now
+
+
+def process_triggers(config_path: Path, state: dict) -> set[str]:
+    """Consume leftover trigger files (backward compatibility).
+
+    Handles .pause_task_*, .unpause_task_*, and .run_task_* files.
+    Returns a set of task IDs that should run immediately.
+    """
+    repo_dir = config_path.parent
+    paused: list[str] = state.setdefault("paused_tasks", [])
+    run_now: set[str] = set()
+    try:
+        entries = list(repo_dir.iterdir())
+    except OSError:
+        return run_now
+    for f in entries:
+        if f.name.startswith(PAUSE_TRIGGER_PREFIX):
+            task_id = f.name[len(PAUSE_TRIGGER_PREFIX):]
+            try:
+                f.unlink()
+            except OSError:
+                pass
+            if task_id not in paused:
+                paused.append(task_id)
+                log(f"[Pause] Task `{task_id}` paused via trigger.")
+        elif f.name.startswith(UNPAUSE_TRIGGER_PREFIX):
+            task_id = f.name[len(UNPAUSE_TRIGGER_PREFIX):]
+            try:
+                f.unlink()
+            except OSError:
+                pass
+            if task_id in paused:
+                paused.remove(task_id)
+                log(f"[Resume] Task `{task_id}` resumed via trigger.")
+        elif f.name.startswith(RUN_TRIGGER_PREFIX):
+            task_id = f.name[len(RUN_TRIGGER_PREFIX):]
+            try:
+                f.unlink()
+            except OSError:
+                pass
+            run_now.add(task_id)
+            log(f"[Run Now] Task `{task_id}` queued for immediate run via trigger.")
+    return run_now
 
 
 def load_config(config_path: Path) -> dict[str, Any]:
@@ -584,6 +763,9 @@ def load_state(state_path: Path) -> dict[str, Any]:
         state["in_progress"] = {}
     if not isinstance(state.get("profiling"), dict):
         state["profiling"] = {}
+    if not isinstance(state.get("paused_tasks"), list):
+        state["paused_tasks"] = []
+    state.pop("run_now_tasks", None)  # transient; never persisted
     # last_outcomes is now merged into last_triggered_slot, so we can ignore it or clean it up
     if "last_outcomes" in state:
         state.pop("last_outcomes", None)
@@ -632,35 +814,12 @@ def positive_int_or_default(value: Any, field_name: str, default: int = 1) -> in
 
 
 def parse_worker_setting(value: Any, default: int = 4) -> int:
-    val_str = str(value).strip().lower()
+    return max(1, to_int(value, default))
 
-    multiplier = 1
-    if "*" in val_str:
-        # e.g. "auto-2 * 100"
-        parts = val_str.split("*")
-        if len(parts) == 2:
-            try:
-                multiplier = int(parts[1].strip())
-            except ValueError:
-                multiplier = 1
-            val_str = parts[0].strip()
 
-    count = default
-    if val_str.startswith("auto"):
-        base_count = os.cpu_count() or 4
-        offset = 0
-        remainder = val_str[4:].replace(" ", "")
-        if remainder:
-            try:
-                offset = int(remainder)
-            except ValueError:
-                 pass
-
-        count = max(1, base_count + offset)
-    else:
-        count = max(1, to_int(val_str, default))
-
-    return count * multiplier
+def compute_retry_delay(base_delay: float, retry_count: int, max_delay: float) -> float:
+    """Exponential backoff: base_delay * 2^retry_count, capped at max_delay."""
+    return min(base_delay * (2 ** retry_count), max_delay)
 
 
 def day_of_week_to_index(value: Any) -> int:
@@ -917,6 +1076,10 @@ def validate_task(task: Any, index: int) -> dict[str, Any]:
         if fm < 1:
             raise ValueError(f"Task `{name}`: `frequency_min` must be >= 1.")
         task_copy["_frequency_min"] = fm
+        # Default start_hour to 0 (midnight) when frequency_min is set
+        # so interval math works instead of falling into "run every tick"
+        if task_copy["_start_hour"] is None:
+            task_copy["_start_hour"] = 0
     else:
         task_copy["_frequency_min"] = None
 
@@ -945,23 +1108,28 @@ def validate_task(task: Any, index: int) -> dict[str, Any]:
             and task_copy["_start_hour"] > task_copy["_end_hour"]):
         raise ValueError(f"Task `{name}`: `start_hour` must be <= `end_hour`.")
 
-    # Optional per-task Python interpreter.
-    python_val = task.get("python")
-    if python_val is not None:
-        python_str = str(python_val).strip()
-        if not python_str:
-            raise ValueError(f"Task `{name}` has an empty `python` field.")
-        python_path = Path(python_str)
-        # If it looks like a bare name (no slashes), resolve under libs/.
-        if not python_path.is_absolute() and "/" not in python_str and "\\" not in python_str:
-            python_path = _LIBS_DIR / python_str / "python.exe"
-        if not python_path.exists():
-            raise ValueError(
-                f"Task `{name}`: Python interpreter not found: {python_path}"
-            )
-        task_copy["python"] = str(python_path)
+    # Task dependencies.
+    depends_on = task.get("depends_on")
+    if depends_on is not None:
+        if isinstance(depends_on, str):
+            depends_on = [d.strip() for d in depends_on.split(",") if d.strip()]
+        elif isinstance(depends_on, list):
+            depends_on = [str(d).strip() for d in depends_on if str(d).strip()]
+        else:
+            raise ValueError(f"Task `{name}`: `depends_on` must be a list or comma-separated string.")
+        task_copy["_depends_on"] = depends_on
     else:
-        task_copy["python"] = None
+        task_copy["_depends_on"] = []
+
+    # Task timeout.
+    raw_timeout = task.get("timeout_minutes")
+    if raw_timeout is not None:
+        timeout = to_int(raw_timeout, -1)
+        if timeout < 1:
+            raise ValueError(f"Task `{name}`: `timeout_minutes` must be >= 1.")
+        task_copy["_timeout_minutes"] = timeout
+    else:
+        task_copy["_timeout_minutes"] = None
 
     return task_copy
 
@@ -1016,6 +1184,55 @@ def should_run(task: dict[str, Any], now: dt.datetime) -> bool:
     return elapsed % frequency_min == 0
 
 
+def compute_next_wake_time(
+    validated_tasks: list[dict[str, Any]],
+    state: dict[str, Any],
+    settings: dict[str, Any],
+    now: dt.datetime,
+    paused_tasks: set[str],
+    max_horizon_minutes: int = 60,
+) -> dt.datetime:
+    """Return the earliest datetime at which the scheduler should next wake.
+
+    Scans forward minute-by-minute up to *max_horizon_minutes* and also
+    considers retry timers for failed tasks.  Falls back to
+    ``now + max_horizon_minutes`` when nothing is due sooner.
+    """
+    candidates: list[dt.datetime] = []
+    base = now.replace(second=0, microsecond=0)
+
+    # A. Next scheduled-task fire time
+    for task in validated_tasks:
+        if task.get("id") in paused_tasks:
+            continue
+        for offset in range(1, max_horizon_minutes + 1):
+            candidate = base + dt.timedelta(minutes=offset)
+            if should_run(task, candidate):
+                candidates.append(candidate)
+                break
+
+    # B. Retry timers for failed tasks
+    retry_base = float(settings.get("retry_delay_seconds", 60))
+    retry_max = float(settings.get("retry_max_delay_seconds", 1800))
+    for key, entry in state.get("last_triggered_slot", {}).items():
+        if not isinstance(entry, dict) or entry.get("outcome") != "failure":
+            continue
+        if key in paused_tasks:
+            continue
+        try:
+            last_run_dt = dt.datetime.strptime(entry["last_run"], "%Y-%m-%d %H:%M:%S")
+            delay = compute_retry_delay(retry_base, entry.get("retry_count", 0), retry_max)
+            candidates.append(last_run_dt + dt.timedelta(seconds=delay))
+        except (ValueError, KeyError):
+            candidates.append(now)
+
+    if not candidates:
+        return now + dt.timedelta(minutes=max_horizon_minutes)
+
+    earliest = min(candidates)
+    return max(earliest, now + dt.timedelta(seconds=1))
+
+
 def run_task(
     task_name: str,
     script_path: Path,
@@ -1025,6 +1242,7 @@ def run_task(
     log_task_output: bool = True,
     lib_pythonpath: str = "",
     interpreter: str | None = None,
+    timeout_seconds: int | None = None,
 ) -> bool:
     interpreter = interpreter or sys.executable
     if dry_run:
@@ -1045,11 +1263,14 @@ def run_task(
             stdout=subprocess.PIPE if capture else subprocess.DEVNULL,
             stderr=subprocess.STDOUT if capture else subprocess.DEVNULL,
             text=capture,
+            timeout=timeout_seconds,
         )
         if capture and result.stdout:
             log_raw(result.stdout.rstrip())
         log(f"[Success] {task_name} completed.")
         return True
+    except subprocess.TimeoutExpired:
+        log(f"[Timeout] {task_name} exceeded {timeout_seconds}s — killed.")
     except subprocess.CalledProcessError as exc:
         if capture and exc.stdout:
             log_raw(exc.stdout.rstrip())
@@ -1087,54 +1308,30 @@ def _try_import_psutil():
                 sys.path.append(d)
 
 
-def file_content_hash(path: Path) -> str:
-    """Return the SHA-256 hex digest of a file's contents."""
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(8192), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
 def resolve_dynamic_worker_cost(
     key: str,
-    script_path: Path,
     profiling_state: dict[str, Any],
     max_workers: int,
     default_cost: int = 100,
 ) -> int:
-    """Return the learned worker_cost, or default_cost if the script changed / is new."""
-    try:
-        current_hash = file_content_hash(script_path)
-    except OSError:
-        return default_cost
-
+    """Return the learned worker_cost, or default_cost if no profiling data exists."""
     entry = profiling_state.get(key)
-    if isinstance(entry, dict) and entry.get("file_hash") == current_hash:
+    if isinstance(entry, dict):
         learned = entry.get("learned_cost", default_cost)
         return max(1, min(int(learned), max_workers))
-
-    # Hash mismatch or first run — reset entry, use default.
-    profiling_state[key] = {"file_hash": current_hash}
     return default_cost
 
 
 def update_profiling_state(
     key: str,
-    script_path: Path,
     profiling_state: dict[str, Any],
     peak_ram_pct: float,
     avg_cpu_pct: float,
     max_workers: int,
 ) -> None:
     """Persist profiling metrics and compute learned_cost."""
-    try:
-        current_hash = file_content_hash(script_path)
-    except OSError:
-        return
     learned_cost = max(1, min(int(max(peak_ram_pct, avg_cpu_pct)), max_workers))
     profiling_state[key] = {
-        "file_hash": current_hash,
         "peak_ram_pct": round(peak_ram_pct, 2),
         "avg_cpu_pct": round(avg_cpu_pct, 2),
         "learned_cost": learned_cost,
@@ -1150,6 +1347,7 @@ def run_task_profiled(
     log_task_output: bool = True,
     lib_pythonpath: str = "",
     interpreter: str | None = None,
+    timeout_seconds: int | None = None,
 ) -> tuple[bool, float, float]:
     """Run a task and profile its peak RAM % and average CPU %.
 
@@ -1172,6 +1370,7 @@ def run_task_profiled(
             log_task_output=log_task_output,
             lib_pythonpath=lib_pythonpath,
             interpreter=interpreter,
+            timeout_seconds=timeout_seconds,
         )
         return success, 0.0, 0.0
 
@@ -1231,7 +1430,10 @@ def run_task_profiled(
 
             if ram_total > peak_ram_pct:
                 peak_ram_pct = ram_total
-            cpu_samples.append(cpu_total)
+            # Normalize to system-wide %: psutil reports 100% = one core,
+            # divide by cpu_count so 100% = all cores (matches Task Manager).
+            num_cpus = psutil.cpu_count() or 1
+            cpu_samples.append(cpu_total / num_cpus)
 
         # Take an immediate sample so short-lived scripts get at least one reading.
         try:
@@ -1264,14 +1466,21 @@ def run_task_profiled(
         monitor_thread = threading.Thread(target=monitor, args=(proc.pid,), daemon=True)
         monitor_thread.start()
 
-        stdout_data, _ = proc.communicate()
+        try:
+            stdout_data, _ = proc.communicate(timeout=timeout_seconds)
+        except subprocess.TimeoutExpired:
+            log(f"[Timeout] {task_name} exceeded {timeout_seconds}s — killing process.")
+            proc.kill()
+            proc.wait()
+            stdout_data = None
         stop_event.set()
         monitor_thread.join(timeout=2)
 
         if capture and stdout_data:
             log_raw(stdout_data.rstrip())
 
-        avg_cpu = (sum(cpu_samples) / len(cpu_samples)) if cpu_samples else 0.0
+        nonzero_cpu = [s for s in cpu_samples if s > 0]
+        avg_cpu = (sum(nonzero_cpu) / len(nonzero_cpu)) if nonzero_cpu else 0.0
 
         if proc.returncode == 0:
             log(
@@ -1284,7 +1493,8 @@ def run_task_profiled(
     except Exception as exc:
         log(f"[Error] {task_name} failed unexpectedly: {exc}")
 
-    avg_cpu = (sum(cpu_samples) / len(cpu_samples)) if cpu_samples else 0.0
+    nonzero_cpu = [s for s in cpu_samples if s > 0]
+    avg_cpu = (sum(nonzero_cpu) / len(nonzero_cpu)) if nonzero_cpu else 0.0
 
     if email_config:
         send_failure_email(email_config, task_name, script_path)
@@ -1304,6 +1514,7 @@ def run_with_slots(
     lib_pythonpath: str = "",
     interpreter: str | None = None,
     profiled: bool = False,
+    timeout_seconds: int | None = None,
 ) -> bool | tuple[bool, float, float]:
     slot_limiter.acquire(worker_cost)
     try:
@@ -1317,6 +1528,7 @@ def run_with_slots(
                 log_task_output=log_task_output,
                 lib_pythonpath=lib_pythonpath,
                 interpreter=interpreter,
+                timeout_seconds=timeout_seconds,
             )
         return run_task(
             task_name=task_name,
@@ -1327,6 +1539,7 @@ def run_with_slots(
             log_task_output=log_task_output,
             lib_pythonpath=lib_pythonpath,
             interpreter=interpreter,
+            timeout_seconds=timeout_seconds,
         )
     finally:
         slot_limiter.release(worker_cost)
@@ -1485,10 +1698,10 @@ def task_key(task: dict[str, Any]) -> str:
 def run_scheduler_pass(
     config_path: Path,
     now: dt.datetime,
-    state_file_override: str | None,
     dry_run: bool,
     default_interpreter: str | None = None,
     subproject_interpreters: dict[Path, str] | None = None,
+    ctx: SchedulerContext | None = None,
 ) -> int:
     _refresh_sys_path()
     lib_pythonpath = os.pathsep.join(_scan_lib_paths())
@@ -1496,10 +1709,7 @@ def run_scheduler_pass(
     _sub_interps = subproject_interpreters or {}
 
     def _resolve_interpreter(task: dict[str, Any], script: Path) -> str | None:
-        """Pick the best interpreter: per-task > subproject venv > default venv."""
-        explicit = task.get("python")
-        if explicit:
-            return explicit
+        """Pick the best interpreter: subproject venv > default venv."""
         # Check if script lives inside a bootstrapped subproject
         resolved = script.resolve()
         for proj_dir, interp in _sub_interps.items():
@@ -1514,7 +1724,8 @@ def run_scheduler_pass(
 
     settings = config.get("settings") or {}
     configure_log_runtime(config_path, settings)
-    retry_delay_seconds = float(settings.get("retry_delay_seconds", 5))
+    retry_delay_seconds = float(settings.get("retry_delay_seconds", 60))
+    retry_max_delay_seconds = float(settings.get("retry_max_delay_seconds", 1800))
     email_config = settings.get("failure_email") or {}
     log_task_output = settings.get("log_task_output", True) is not False
     use_workers_raw = to_int(settings.get("use_workers"), 1)
@@ -1530,70 +1741,90 @@ def run_scheduler_pass(
             log(f"Parallel mode enabled (use_workers={use_workers_raw}). max_workers={max_workers}")
     else:
         log("Running in sequential mode (use_workers=0).")
-    state_filename = state_file_override or settings.get("state_file", "sequencer_state.json")
-    state_path = (config_path.parent / state_filename).resolve()
 
-    state = load_state(state_path)
-    last_triggered_slot = state["last_triggered_slot"]
-    in_progress = state["in_progress"]
-    profiling = state["profiling"]
-    state_lock = threading.Lock()
+    # --- State: use SchedulerContext if provided, otherwise local ---
+    if ctx is not None:
+        state = ctx.state
+        last_triggered_slot = ctx.last_triggered_slot
+        in_progress = ctx.in_progress
+        profiling = ctx.profiling
+        state_lock = ctx.state_lock
+        state_path = ctx.state_path
+        slot_limiter = ctx.slot_limiter
 
-    def mark_task_started(
-        key: str,
-        task_name: str,
-        script_path: Path,
-        worker_cost: int,
-        slot_key_value: str,
-        is_recovery: bool,
-    ) -> None:
-        with state_lock:
-            in_progress[key] = {
-                "task_name": task_name,
-                "script_path": str(script_path),
-                "worker_cost": worker_cost,
-                "slot_key": slot_key_value,
-                "started_at": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "is_recovery": is_recovery,
-            }
-            save_state(state_path, state)
+        mark_task_started = ctx.mark_task_started
+        mark_task_finished = ctx.mark_task_finished
+        clear_recovery_entry = ctx.clear_recovery_entry
+        mark_slot_consumed_without_run = ctx.mark_slot_consumed_without_run
+        get_last_slot = ctx.get_last_slot
+    else:
+        state_path = (config_path.parent / "sequencer_state.json").resolve()
 
-    def get_last_slot(key: str) -> str | None:
-        """Retrieve the last slot string, handling both legacy and new formats."""
-        entry = last_triggered_slot.get(key)
-        if isinstance(entry, dict):
-            return str(entry.get("slot", "")) or None
-        if isinstance(entry, str):
-            return entry
-        return None
+        state = load_state(state_path)
+        last_triggered_slot = state["last_triggered_slot"]
+        in_progress = state["in_progress"]
+        profiling = state["profiling"]
+        state_lock = threading.Lock()
+        slot_limiter = None  # created later if needed
 
-    def mark_task_finished(key: str, slot_key_value: str, success: bool) -> None:
-        with state_lock:
-            in_progress.pop(key, None)
-            now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            last_triggered_slot[key] = {
-                "slot": slot_key_value,
-                "last_run": now_str,
-                "outcome": "success" if success else "failure",
-            }
-            save_state(state_path, state)
-
-    def clear_recovery_entry(key: str) -> None:
-        with state_lock:
-            if key in in_progress:
-                in_progress.pop(key, None)
+        def mark_task_started(
+            key: str,
+            task_name: str,
+            script_path: Path,
+            worker_cost: int,
+            slot_key_value: str,
+            is_recovery: bool,
+        ) -> None:
+            with state_lock:
+                in_progress[key] = {
+                    "task_name": task_name,
+                    "script_path": str(script_path),
+                    "worker_cost": worker_cost,
+                    "slot_key": slot_key_value,
+                    "started_at": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "is_recovery": is_recovery,
+                }
                 save_state(state_path, state)
 
-    def mark_slot_consumed_without_run(key: str, slot_key_value: str) -> None:
-        with state_lock:
-            in_progress.pop(key, None)
-            now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            last_triggered_slot[key] = {
-                "slot": slot_key_value,
-                "last_run": now_str,
-                "outcome": "skipped",
-            }
-            save_state(state_path, state)
+        def get_last_slot(key: str) -> str | None:
+            """Retrieve the last slot string, handling both legacy and new formats."""
+            entry = last_triggered_slot.get(key)
+            if isinstance(entry, dict):
+                return str(entry.get("slot", "")) or None
+            if isinstance(entry, str):
+                return entry
+            return None
+
+        def mark_task_finished(key: str, slot_key_value: str, success: bool) -> None:
+            with state_lock:
+                in_progress.pop(key, None)
+                now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                prev = last_triggered_slot.get(key)
+                prev_count = prev.get("retry_count", 0) if isinstance(prev, dict) else 0
+                last_triggered_slot[key] = {
+                    "slot": slot_key_value,
+                    "last_run": now_str,
+                    "outcome": "success" if success else "failure",
+                    "retry_count": 0 if success else prev_count + 1,
+                }
+                save_state(state_path, state)
+
+        def clear_recovery_entry(key: str) -> None:
+            with state_lock:
+                if key in in_progress:
+                    in_progress.pop(key, None)
+                    save_state(state_path, state)
+
+        def mark_slot_consumed_without_run(key: str, slot_key_value: str) -> None:
+            with state_lock:
+                in_progress.pop(key, None)
+                now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                last_triggered_slot[key] = {
+                    "slot": slot_key_value,
+                    "last_run": now_str,
+                    "outcome": "skipped",
+                }
+                save_state(state_path, state)
 
     raw_tasks = config.get("tasks") or []
     if not isinstance(raw_tasks, list):
@@ -1624,10 +1855,39 @@ def run_scheduler_pass(
         if key not in task_by_key:
             task_by_key[key] = task
 
+    # Validate dependency references.
+    all_task_names = {t["name"] for t in validated_tasks}
+    for task in validated_tasks:
+        for dep in task.get("_depends_on", []):
+            if dep not in all_task_names:
+                log(f"[Error] Task `{task['name']}` depends on unknown task `{dep}`.")
+                had_error = True
+
+    # Process commands from monitor (UDP queue + leftover trigger files).
+    if ctx is not None:
+        with state_lock:
+            run_now_set = process_commands(ctx.command_queue, state)
+            run_now_set |= process_triggers(config_path, state)
+            save_state(state_path, state)
+    else:
+        run_now_set = process_triggers(config_path, state)
+    paused_tasks_set = set(state.get("paused_tasks", []))
+
     for key, recovery_entry in list(in_progress.items()):
+        # In daemon mode, skip tasks still running from a previous tick
+        if ctx is not None and ctx.is_task_actively_running(key):
+            log(f"[Skip] `{key}` still running from a previous tick.")
+            scheduled_keys.add(key)
+            continue
+
         task = task_by_key.get(key)
         if task is None:
             log(f"[Warn] Dropping recovery entry for unknown task key `{key}`.")
+            clear_recovery_entry(key)
+            continue
+
+        if key in paused_tasks_set:
+            log(f"[Skip] Recovery for paused task `{task['name']}`.")
             clear_recovery_entry(key)
             continue
 
@@ -1641,7 +1901,7 @@ def run_scheduler_pass(
             clear_recovery_entry(key)
             continue
 
-        worker_cost = resolve_dynamic_worker_cost(key, script_path, profiling, max_workers, default_worker_cost)
+        worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
         log(f"[Profile] Recovery task `{task['name']}` using dynamic cost={worker_cost}")
         if worker_cost > max_workers:
             log(
@@ -1672,6 +1932,7 @@ def run_scheduler_pass(
                 "worker_cost": worker_cost,
                 "is_recovery": True,
                 "interpreter": _resolve_interpreter(task, script_path),
+                "timeout_minutes": task.get("_timeout_minutes"),
             }
         )
         scheduled_keys.add(key)
@@ -1701,14 +1962,37 @@ def run_scheduler_pass(
                 try:
                     last_run_dt = dt.datetime.strptime(last_run_str, "%Y-%m-%d %H:%M:%S")
                     elapsed = (now - last_run_dt).total_seconds()
-                    if elapsed < retry_delay_seconds:
+                    retry_count = last_entry.get("retry_count", 0)
+                    delay = compute_retry_delay(retry_delay_seconds, retry_count, retry_max_delay_seconds)
+                    if elapsed < delay:
                         continue
-                    log(f"[Retry] {task['name']} failed previously — retrying after {retry_delay_seconds}s.")
+                    log(f"[Retry] {task['name']} — attempt #{retry_count + 1} after {delay:.0f}s backoff.")
                 except (ValueError, TypeError):
                     pass  # Malformed timestamp; fall through and retry.
             else:
                 log(f"[Skip] {task['name']} already triggered in slot {slot_key}.")
                 continue
+
+        # Check task dependencies.
+        deps = task.get("_depends_on", [])
+        if deps:
+            all_deps_ok = True
+            for dep_name in deps:
+                dep_key = next((task_key(t) for t in validated_tasks if t["name"] == dep_name), None)
+                if dep_key is None:
+                    all_deps_ok = False
+                    break
+                dep_entry = last_triggered_slot.get(dep_key)
+                dep_in_slot = isinstance(dep_entry, dict) and dep_entry.get("slot") == slot_key
+                dep_succeeded = isinstance(dep_entry, dict) and dep_entry.get("outcome") == "success"
+                if not (dep_in_slot and dep_succeeded):
+                    all_deps_ok = False
+                    break
+            if not all_deps_ok:
+                continue
+
+        if key in paused_tasks_set:
+            continue
 
         script_path = (config_path.parent / task["path"]).resolve()
         if not script_path.exists():
@@ -1718,7 +2002,7 @@ def run_scheduler_pass(
             scheduled_keys.add(key)
             continue
 
-        worker_cost = resolve_dynamic_worker_cost(key, script_path, profiling, max_workers, default_worker_cost)
+        worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
         log(f"[Profile] {task['name']} using dynamic cost={worker_cost}")
         if worker_cost > max_workers:
             log(
@@ -1738,6 +2022,7 @@ def run_scheduler_pass(
                 "worker_cost": worker_cost,
                 "is_recovery": False,
                 "interpreter": _resolve_interpreter(task, script_path),
+                "timeout_minutes": task.get("_timeout_minutes"),
             }
         )
         scheduled_keys.add(key)
@@ -1754,10 +2039,32 @@ def run_scheduler_pass(
         try:
             last_run_dt = dt.datetime.strptime(last_run_str, "%Y-%m-%d %H:%M:%S")
             elapsed = (now - last_run_dt).total_seconds()
-            if elapsed < retry_delay_seconds:
+            retry_count = last_entry.get("retry_count", 0)
+            delay = compute_retry_delay(retry_delay_seconds, retry_count, retry_max_delay_seconds)
+            if elapsed < delay:
                 continue
         except (ValueError, TypeError):
             pass  # Malformed timestamp; fall through and retry.
+
+        # Check task dependencies.
+        deps = task.get("_depends_on", [])
+        if deps:
+            all_deps_ok = True
+            for dep_name in deps:
+                dep_key = next((task_key(t) for t in validated_tasks if t["name"] == dep_name), None)
+                if dep_key is None:
+                    all_deps_ok = False
+                    break
+                dep_entry = last_triggered_slot.get(dep_key)
+                dep_succeeded = isinstance(dep_entry, dict) and dep_entry.get("outcome") == "success"
+                if not dep_succeeded:
+                    all_deps_ok = False
+                    break
+            if not all_deps_ok:
+                continue
+
+        if key in paused_tasks_set:
+            continue
 
         script_path = (config_path.parent / task["path"]).resolve()
         if not script_path.exists():
@@ -1765,7 +2072,7 @@ def run_scheduler_pass(
             had_error = True
             continue
 
-        worker_cost = resolve_dynamic_worker_cost(key, script_path, profiling, max_workers, default_worker_cost)
+        worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
         log(f"[Profile] Retry task `{task['name']}` using dynamic cost={worker_cost}")
         if worker_cost > max_workers:
             log(
@@ -1775,7 +2082,9 @@ def run_scheduler_pass(
             had_error = True
             continue
 
-        log(f"[Retry] {task['name']} failed previously — retrying after {retry_delay_seconds}s.")
+        retry_count = last_entry.get("retry_count", 0)
+        delay = compute_retry_delay(retry_delay_seconds, retry_count, retry_max_delay_seconds)
+        log(f"[Retry] {task['name']} — attempt #{retry_count + 1} after {delay:.0f}s backoff.")
         tasks_to_execute.append(
             {
                 "key": key,
@@ -1784,9 +2093,51 @@ def run_scheduler_pass(
                 "worker_cost": worker_cost,
                 "is_recovery": False,
                 "interpreter": _resolve_interpreter(task, script_path),
+                "timeout_minutes": task.get("_timeout_minutes"),
             }
         )
         scheduled_keys.add(key)
+
+    # --- Run-now pass: queue tasks triggered on-demand from the monitor ---
+    if run_now_set:
+        for task in validated_tasks:
+            key = task_key(task)
+            if key not in run_now_set:
+                continue
+            if key in scheduled_keys:
+                continue
+            if key in paused_tasks_set:
+                log(f"[Skip] Run-now ignored for paused task `{task['name']}`. Unpause it first.")
+                continue
+
+            script_path = (config_path.parent / task["path"]).resolve()
+            if not script_path.exists():
+                log(f"[Error] Script not found for task `{task['name']}`: {script_path}")
+                had_error = True
+                continue
+
+            worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
+            log(f"[Run Now] {task['name']} — triggered from monitor (cost={worker_cost})")
+            if worker_cost > max_workers:
+                log(
+                    f"[Error] Task `{task['name']}` requires worker_cost={worker_cost}, "
+                    f"which exceeds max_workers={max_workers}."
+                )
+                had_error = True
+                continue
+
+            tasks_to_execute.append(
+                {
+                    "key": key,
+                    "task_name": task["name"],
+                    "script_path": script_path,
+                    "worker_cost": worker_cost,
+                    "is_recovery": False,
+                    "interpreter": _resolve_interpreter(task, script_path),
+                    "timeout_minutes": task.get("_timeout_minutes"),
+                }
+            )
+            scheduled_keys.add(key)
 
     thread_worker_count = min(max_workers, len(tasks_to_execute)) if use_workers else 1
     if thread_worker_count > 1:
@@ -1805,7 +2156,7 @@ def run_scheduler_pass(
             key = task_run["key"]
             with state_lock:
                 update_profiling_state(
-                    key, task_run["script_path"], profiling,
+                    key, profiling,
                     peak_ram, avg_cpu, max_workers,
                 )
             learned = profiling.get(key, {}).get("learned_cost", "?")
@@ -1817,6 +2168,66 @@ def run_scheduler_pass(
             return success
         return result
 
+    # --- Fire-and-forget mode (daemon with SchedulerContext) ---
+    if ctx is not None and tasks_to_execute:
+        for task_run in tasks_to_execute:
+            _key = task_run["key"]
+            ctx.actively_running.add(_key)
+
+        def _daemon_task_wrapper(task_run: dict[str, Any]) -> None:
+            _key = task_run["key"]
+            _timeout_min = task_run.get("timeout_minutes")
+            _timeout_sec = _timeout_min * 60 if _timeout_min is not None else None
+            try:
+                ctx.mark_task_started(
+                    key=_key,
+                    task_name=task_run["task_name"],
+                    script_path=task_run["script_path"],
+                    worker_cost=task_run["worker_cost"],
+                    slot_key_value=slot_key,
+                    is_recovery=task_run["is_recovery"],
+                )
+                if use_workers:
+                    raw_result = run_with_slots(
+                        task_name=task_run["task_name"],
+                        script_path=task_run["script_path"],
+                        worker_cost=task_run["worker_cost"],
+                        slot_limiter=ctx.slot_limiter,
+                        working_directory=config_path.parent,
+                        dry_run=dry_run,
+                        email_config=email_config,
+                        log_task_output=log_task_output,
+                        lib_pythonpath=lib_pythonpath,
+                        interpreter=task_run.get("interpreter"),
+                        profiled=True,
+                        timeout_seconds=_timeout_sec,
+                    )
+                else:
+                    raw_result = run_task_profiled(
+                        task_name=task_run["task_name"],
+                        script_path=task_run["script_path"],
+                        working_directory=config_path.parent,
+                        dry_run=dry_run,
+                        email_config=email_config,
+                        log_task_output=log_task_output,
+                        lib_pythonpath=lib_pythonpath,
+                        interpreter=task_run.get("interpreter"),
+                        timeout_seconds=_timeout_sec,
+                    )
+                succeeded = _handle_profiled_result(task_run, raw_result)
+            except Exception as exc:
+                log(f"[Error] {task_run['task_name']} crashed in executor: {exc}")
+                succeeded = False
+            ctx.mark_task_finished(_key, slot_key, succeeded)
+            if not succeeded:
+                log(f"[Warn] {task_run['task_name']} finished with failure.")
+
+        for task_run in tasks_to_execute:
+            ctx._executor.submit(_daemon_task_wrapper, task_run)
+
+        return 0
+
+    # --- Blocking mode (CLI one-shot or sequential) ---
     if thread_worker_count <= 1:
         for task_run in tasks_to_execute:
             key = task_run["key"]
@@ -1833,6 +2244,8 @@ def run_scheduler_pass(
                 slot_key_value=slot_key,
                 is_recovery=is_recovery,
             )
+            _timeout_min = task_run.get("timeout_minutes")
+            _timeout_sec = _timeout_min * 60 if _timeout_min is not None else None
             result = run_task_profiled(
                 task_name=task_name,
                 script_path=script_path,
@@ -1842,12 +2255,14 @@ def run_scheduler_pass(
                 log_task_output=log_task_output,
                 lib_pythonpath=lib_pythonpath,
                 interpreter=task_run.get("interpreter"),
+                timeout_seconds=_timeout_sec,
             )
             succeeded = _handle_profiled_result(task_run, result)
             mark_task_finished(key, slot_key, succeeded)
     else:
-        slot_limiter = WorkerSlotLimiter(max_workers)
-        
+        if slot_limiter is None:
+            slot_limiter = WorkerSlotLimiter(max_workers)
+
         def execute_task(task_run: dict[str, Any]) -> bool | tuple[bool, float, float]:
             mark_task_started(
                 key=task_run["key"],
@@ -1857,6 +2272,8 @@ def run_scheduler_pass(
                 slot_key_value=slot_key,
                 is_recovery=task_run["is_recovery"],
             )
+            _timeout_min = task_run.get("timeout_minutes")
+            _timeout_sec = _timeout_min * 60 if _timeout_min is not None else None
             return run_with_slots(
                 task_name=task_run["task_name"],
                 script_path=task_run["script_path"],
@@ -1869,6 +2286,7 @@ def run_scheduler_pass(
                 lib_pythonpath=lib_pythonpath,
                 interpreter=task_run.get("interpreter"),
                 profiled=True,
+                timeout_seconds=_timeout_sec,
             )
 
         with ThreadPoolExecutor(max_workers=thread_worker_count) as executor:
@@ -1889,7 +2307,7 @@ def run_scheduler_pass(
                 except Exception as exc:
                     log(f"[Error] {task_name} crashed in scheduler thread: {exc}")
                     succeeded = False
-                
+
                 mark_task_finished(key, slot_key, succeeded)
                 if not succeeded:
                     had_error = True
@@ -1942,73 +2360,153 @@ def main() -> int:
             return 1
 
         startup_settings = startup_config.get("settings") or {}
-        git_pull_interval = max(0, to_int(startup_settings.get("git_pull_interval_minutes"), 0))
-        git_push_interval = max(0, to_int(startup_settings.get("git_push_interval_minutes"), 0))
-        last_pull_time: dt.datetime | None = dt.datetime.now()
-        last_push_time: dt.datetime | None = dt.datetime.now()
         last_heartbeat_hour: int | None = None
 
-        def _save_daemon_timestamps() -> None:
-            """Persist daemon timing info into the state file."""
-            try:
-                state_filename = (startup_config.get("settings") or {}).get("state_file", "sequencer_state.json")
-                sp = (config_path.parent / state_filename).resolve()
-                st = load_state(sp)
-                fmt = "%Y-%m-%d %H:%M:%S"
-                st["daemon"] = {
-                    "last_pull_time": last_pull_time.strftime(fmt) if last_pull_time else None,
-                    "last_push_time": last_push_time.strftime(fmt) if last_push_time else None,
-                    "last_heartbeat_hour": last_heartbeat_hour,
-                }
-                save_state(sp, st)
-            except Exception:
-                pass
+        # --- Initialize SchedulerContext ---
+        state_path = (config_path.parent / "sequencer_state.json").resolve()
+        max_workers = parse_worker_setting(startup_settings.get("max_workers", "4"), 4)
+        ctx = SchedulerContext(state_path, max_workers)
+        log(f"[Daemon] SchedulerContext initialized (max_workers={max_workers}).")
 
-        _save_daemon_timestamps()
-        log("Starting daemon mode. Scheduler ticks run on minute boundaries.")
+        stop_event = threading.Event()
+
+        # --- Background services thread (git pull/push) ---
+        def _background_services() -> None:
+            git_pull_interval = max(0, to_int(startup_settings.get("git_pull_interval_minutes"), 0))
+            git_push_interval = max(0, to_int(startup_settings.get("git_push_interval_minutes"), 0))
+            last_pull_time: dt.datetime | None = dt.datetime.now()
+            last_push_time: dt.datetime | None = dt.datetime.now()
+            fmt = "%Y-%m-%d %H:%M:%S"
+
+            with ctx.state_lock:
+                if "daemon" not in ctx.state:
+                    ctx.state["daemon"] = {}
+                ctx.state["daemon"]["last_pull_time"] = last_pull_time.strftime(fmt)
+                ctx.state["daemon"]["last_push_time"] = last_push_time.strftime(fmt)
+                save_state(ctx.state_path, ctx.state)
+
+            while not stop_event.is_set():
+                try:
+                    # Reload git intervals from config
+                    try:
+                        cfg = load_config(config_path)
+                        cfg_settings = cfg.get("settings") or {}
+                        git_pull_interval = max(0, to_int(cfg_settings.get("git_pull_interval_minutes"), git_pull_interval))
+                        git_push_interval = max(0, to_int(cfg_settings.get("git_push_interval_minutes"), git_push_interval))
+                    except Exception:
+                        pass
+
+                    # Drain git commands from queue
+                    pull_triggered = False
+                    push_triggered = False
+                    while True:
+                        try:
+                            cmd = ctx.command_queue.get_nowait()
+                        except queue.Empty:
+                            break
+                        if cmd == "pull":
+                            pull_triggered = True
+                        elif cmd == "push":
+                            push_triggered = True
+
+                    # Git pull check
+                    new_pull_time, pull_changed = maybe_git_pull(config_path, last_pull_time, git_pull_interval, triggered=pull_triggered)
+                    last_pull_time = new_pull_time
+
+                    if pull_changed:
+                        try:
+                            _sync_vendor_packages()
+                            _sync_subproject_packages(config_path.parent)
+                        except Exception as exc:
+                            log(f"[Bootstrap] Post-pull sync failed: {exc}")
+                        ctx.wake_event.set()  # config may have changed
+
+                    # Git push check
+                    new_push_time = maybe_git_push(config_path, last_push_time, git_push_interval, triggered=push_triggered)
+                    push_changed = new_push_time is not last_push_time
+                    last_push_time = new_push_time
+
+                    if pull_changed or push_changed:
+                        with ctx.state_lock:
+                            if "daemon" not in ctx.state:
+                                ctx.state["daemon"] = {}
+                            if last_pull_time:
+                                ctx.state["daemon"]["last_pull_time"] = last_pull_time.strftime(fmt)
+                            if last_push_time:
+                                ctx.state["daemon"]["last_push_time"] = last_push_time.strftime(fmt)
+                            save_state(ctx.state_path, ctx.state)
+
+                except Exception as exc:
+                    log(f"[Background] Unexpected error: {exc}")
+
+                # Sleep until the next git operation is due
+                now_bg = dt.datetime.now()
+                waits: list[float] = []
+                if git_pull_interval > 0 and last_pull_time is not None:
+                    next_pull = (last_pull_time + dt.timedelta(minutes=git_pull_interval) - now_bg).total_seconds()
+                    waits.append(max(1, next_pull))
+                if git_push_interval > 0 and last_push_time is not None:
+                    next_push = (last_push_time + dt.timedelta(minutes=git_push_interval) - now_bg).total_seconds()
+                    waits.append(max(1, next_push))
+                sleep_bg = min(waits) if waits else 600
+                ctx.git_wake_event.clear()
+                ctx.git_wake_event.wait(sleep_bg)
+                if stop_event.is_set():
+                    break
+
+        def _udp_listener() -> None:
+            """Listen for UDP command messages from monitor (zero-CPU blocking wait).
+
+            Protocol: UTF-8 encoded commands, one per packet:
+              pull, push, pause:<id>, unpause:<id>, run:<id>
+            """
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.settimeout(1.0)
+            try:
+                sock.bind(("127.0.0.1", WAKE_UDP_PORT))
+            except OSError as exc:
+                log(f"[UDP] Could not bind port {WAKE_UDP_PORT}: {exc}")
+                return
+            while not stop_event.is_set():
+                try:
+                    data, _ = sock.recvfrom(256)
+                    cmd = data.decode("utf-8", errors="ignore").strip()
+                    if cmd in ("pull", "push"):
+                        ctx.command_queue.put(cmd)
+                        ctx.git_wake_event.set()
+                    elif cmd.startswith(("pause:", "unpause:", "run:")):
+                        ctx.command_queue.put(cmd)
+                        ctx.wake_event.set()
+                except socket.timeout:
+                    pass
+                except OSError:
+                    break
+            sock.close()
+
+        bg_thread = threading.Thread(target=_background_services, daemon=True)
+        bg_thread.start()
+        udp_thread = threading.Thread(target=_udp_listener, daemon=True)
+        udp_thread.start()
+        log("Starting daemon mode (event-driven sleep).")
+        log(f"[Background] Git sync thread started (pull every {to_int(startup_settings.get('git_pull_interval_minutes'), 0)} min, push on task completion).")
+        log(f"[Background] UDP wake listener on 127.0.0.1:{WAKE_UDP_PORT}.")
+
         try:
             while True:
-                # --- reload git intervals from config ---
-                try:
-                    cfg = load_config(config_path)
-                    cfg_settings = cfg.get("settings") or {}
-                    git_pull_interval = max(0, to_int(cfg_settings.get("git_pull_interval_minutes"), git_pull_interval))
-                    git_push_interval = max(0, to_int(cfg_settings.get("git_push_interval_minutes"), git_push_interval))
-                except Exception:
-                    pass
-
-                # --- git pull check ---
-                old_pull = last_pull_time
-                last_pull_time = maybe_git_pull(config_path, last_pull_time, git_pull_interval)
-                if last_pull_time is not old_pull:
-                    _save_daemon_timestamps()
-                    # Re-sync vendored packages in case pull brought changes
-                    try:
-                        _sync_vendor_packages()
-                        _sync_subproject_packages(config_path.parent)
-                    except Exception as exc:
-                        log(f"[Bootstrap] Post-pull sync failed: {exc}")
-
                 tick_time = dt.datetime.now()
                 try:
                     run_scheduler_pass(
                         config_path=config_path,
                         now=tick_time,
-                        state_file_override=args.state_file,
                         dry_run=args.dry_run,
                         default_interpreter=default_interpreter,
                         subproject_interpreters=subproject_interpreters,
+                        ctx=ctx,
                     )
                 except ValueError as exc:
                     log(f"[Error] {exc}")
                 except Exception as exc:
                     log(f"[Error] Daemon tick failed unexpectedly: {exc}")
-
-                # --- git push check (after scheduler pass so latest state is included) ---
-                old_push = last_push_time
-                last_push_time = maybe_git_push(config_path, last_push_time, git_push_interval)
-                if last_push_time is not old_push:
-                    _save_daemon_timestamps()
 
                 # --- heartbeat email check ---
                 try:
@@ -2022,17 +2520,45 @@ def main() -> int:
                         else:
                             allowed_hours = set(range(24))
                         if now_hb.hour in allowed_hours and last_heartbeat_hour != now_hb.hour:
-                            state_filename = (cfg.get("settings") or {}).get("state_file", "sequencer_state.json")
-                            state_path = (config_path.parent / state_filename).resolve()
                             send_heartbeat_email(hb_email_cfg, state_path)
                             last_heartbeat_hour = now_hb.hour
-                            _save_daemon_timestamps()
+                            with ctx.state_lock:
+                                if "daemon" not in ctx.state:
+                                    ctx.state["daemon"] = {}
+                                ctx.state["daemon"]["last_heartbeat_hour"] = last_heartbeat_hour
+                                save_state(ctx.state_path, ctx.state)
                 except Exception as exc:
                     log(f"[Heartbeat] Error: {exc}")
 
-                sleep_until_next_minute_boundary()
+                # --- event-driven sleep until next job ---
+                try:
+                    cfg_sleep = load_config(config_path)
+                    raw_tasks_sleep = cfg_sleep.get("tasks") or []
+                    validated_sleep = []
+                    for i, rt in enumerate(raw_tasks_sleep, 1):
+                        try:
+                            validated_sleep.append(validate_task(rt, i))
+                        except ValueError:
+                            pass
+                    stgs_sleep = cfg_sleep.get("settings") or {}
+                    paused_sleep = set(ctx.state.get("paused_tasks", []))
+                    next_wake = compute_next_wake_time(
+                        validated_sleep, ctx.state, stgs_sleep,
+                        dt.datetime.now(), paused_sleep,
+                    )
+                    sleep_secs = max(0, (next_wake - dt.datetime.now()).total_seconds())
+                except Exception:
+                    sleep_secs = 60  # safe fallback
+
+                log(f"[Sleep] Next wake in {sleep_secs:.0f}s")
+                ctx.wake_event.clear()
+                ctx.wake_event.wait(timeout=sleep_secs)
         except KeyboardInterrupt:
-            log("Daemon stopped by user.")
+            log("Daemon stopped by user. Waiting for running tasks to finish...")
+            stop_event.set()
+            ctx.shutdown(wait=True)
+            bg_thread.join(timeout=5)
+            log("All tasks finished. Exiting.")
             return 0
 
     try:
@@ -2040,7 +2566,6 @@ def main() -> int:
         return run_scheduler_pass(
             config_path=config_path,
             now=now,
-            state_file_override=args.state_file,
             dry_run=args.dry_run,
             default_interpreter=default_interpreter,
             subproject_interpreters=subproject_interpreters,

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import json
 import msvcrt
+import socket
 import sys
 import threading
-import time
 from pathlib import Path
 
 _LIBS_DIR = Path(__file__).resolve().parent / "libs"
@@ -41,17 +41,29 @@ except ImportError:
 BASE_DIR = Path(__file__).resolve().parent
 STATE_FILE = BASE_DIR / "sequencer_state.json"
 SETTINGS_FILE = BASE_DIR / "settings.yaml"
-GIT_PULL_TRIGGER = BASE_DIR / ".git_pull_now"
-GIT_PUSH_TRIGGER = BASE_DIR / ".git_push_now"
+SCHEDULE_FILE = BASE_DIR / "schedule.yaml"
+WAKE_UDP_PORT = 19876
+
+
+def _send_command(cmd: str) -> None:
+    """Send a command to the sequencer via UDP (e.g. 'pull', 'pause:task_id')."""
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.sendto(cmd.encode("utf-8"), ("127.0.0.1", WAKE_UDP_PORT))
+        sock.close()
+    except OSError:
+        pass
+
 
 REFRESH_SECONDS = 2
 PAGE_SIZE = 10
-SECTIONS = ["tasks", "profiling"]
+SECTIONS = ["tasks", "profiling", "schedule"]
 
 _quit_event = threading.Event()
 _lock = threading.Lock()
 _focus_index = 0  # index into SECTIONS
-_scroll_offsets = {"tasks": 0, "profiling": 0}
+_scroll_offsets = {"tasks": 0, "profiling": 0, "schedule": 0}
+_visible_task_keys: list[str] = []  # populated by build_task_table for pause toggle
 
 
 def load_json(path: Path) -> dict:
@@ -78,8 +90,10 @@ def _clamp_offset(offset: int, total: int, visible: int) -> int:
 
 
 def build_task_table(state: dict, offset: int, focused: bool) -> tuple[Panel, int]:
+    global _visible_task_keys
     last_slots = state.get("last_triggered_slot", {})
     in_progress = state.get("in_progress", {})
+    paused_tasks = set(state.get("paused_tasks", []))
     all_keys_set = set(list(last_slots.keys()) + list(in_progress.keys()))
 
     def _sort_key(k: str) -> tuple[int, str]:
@@ -89,13 +103,19 @@ def build_task_table(state: dict, offset: int, focused: bool) -> tuple[Panel, in
             return (0, k)
         if k in in_progress:
             return (1, k)
-        return (2, k)
+        if k in paused_tasks:
+            return (2, k)
+        return (3, k)
 
     all_keys = sorted(all_keys_set, key=_sort_key)
     total = len(all_keys)
 
     offset = _clamp_offset(offset, total, PAGE_SIZE)
     visible_keys = all_keys[offset:offset + PAGE_SIZE]
+    _visible_task_keys = list(visible_keys)
+
+    # Which row is selected (relative to visible page)
+    selected_row = _scroll_offsets.get("tasks", 0) - offset if focused else -1
 
     table = Table(expand=True)
     table.add_column("Task ID", style="cyan", no_wrap=True)
@@ -107,8 +127,12 @@ def build_task_table(state: dict, offset: int, focused: bool) -> tuple[Panel, in
     if not visible_keys:
         table.add_row("(no tasks)", "", "", "", "")
     else:
-        for key in visible_keys:
-            if key in in_progress:
+        for row_idx, key in enumerate(visible_keys):
+            is_selected = focused and row_idx == selected_row
+
+            if key in paused_tasks:
+                status = Text("PAUSED", style="bold magenta")
+            elif key in in_progress:
                 status = Text("RUNNING", style="bold yellow")
             else:
                 status = Text("Idle", style="dim")
@@ -132,7 +156,13 @@ def build_task_table(state: dict, offset: int, focused: bool) -> tuple[Panel, in
             else:
                 outcome = Text(outcome_raw or "-", style="dim")
 
-            table.add_row(key, status, slot, outcome, last_run)
+            # Highlight selected row
+            if is_selected:
+                key_text = Text(f"> {key}", style="bold white")
+            else:
+                key_text = Text(f"  {key}", style="cyan")
+
+            table.add_row(key_text, status, slot, outcome, last_run)
 
     page_info = f" ({offset + 1}-{offset + len(visible_keys)}/{total})" if total > PAGE_SIZE else ""
     border = "bold cyan" if focused else "dim"
@@ -167,6 +197,91 @@ def build_profiling_table(state: dict, offset: int, focused: bool) -> tuple[Pane
     page_info = f" ({offset + 1}-{offset + len(visible_keys)}/{total})" if total > PAGE_SIZE else ""
     border = "bold cyan" if focused else "dim"
     title = f"Profiling{page_info}"
+    return Panel(table, title=title, border_style=border), offset
+
+
+def build_schedule_table(offset: int, focused: bool) -> tuple[Panel, int]:
+    """Show today's schedule: which tasks run at which times."""
+    import datetime as dt
+
+    now = dt.datetime.now()
+    today = now.date()
+
+    # Load schedule.yaml
+    if yaml is None or not SCHEDULE_FILE.exists():
+        return Panel("(schedule.yaml not found)", title="Today's Schedule", border_style="dim"), 0
+
+    try:
+        data = yaml.safe_load(SCHEDULE_FILE.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return Panel("(failed to read schedule.yaml)", title="Today's Schedule", border_style="dim"), 0
+
+    raw_tasks = data.get("tasks") or []
+    if not isinstance(raw_tasks, list):
+        return Panel("(no tasks)", title="Today's Schedule", border_style="dim"), 0
+
+    # Validate tasks using sequencer's validate_task
+    try:
+        from sequencer import validate_task, should_run
+    except ImportError:
+        return Panel("(cannot import sequencer)", title="Today's Schedule", border_style="dim"), 0
+
+    validated = []
+    for i, raw in enumerate(raw_tasks, start=1):
+        try:
+            validated.append(validate_task(raw, i))
+        except (ValueError, Exception):
+            continue
+
+    if not validated:
+        return Panel("(no valid tasks)", title="Today's Schedule", border_style="dim"), 0
+
+    # Build timeline: check every minute of today
+    timeline: list[tuple[str, list[str]]] = []
+    seen_slots: dict[str, set[str]] = {}  # time_str -> set of task names
+
+    for hour in range(24):
+        for minute in range(60):
+            check_time = dt.datetime(today.year, today.month, today.day, hour, minute)
+            running = []
+            for task in validated:
+                if should_run(task, check_time):
+                    running.append(task["name"])
+            if running:
+                time_str = f"{hour:02d}:{minute:02d}"
+                task_set = frozenset(running)
+                # Collapse consecutive identical entries
+                if timeline and timeline[-1][1] == running:
+                    continue
+                timeline.append((time_str, running))
+
+    total = len(timeline)
+    offset = _clamp_offset(offset, total, PAGE_SIZE)
+    visible = timeline[offset:offset + PAGE_SIZE]
+
+    table = Table(expand=True)
+    table.add_column("Time", style="cyan", no_wrap=True, width=7)
+    table.add_column("Tasks", style="white")
+
+    if not visible:
+        table.add_row("(none)", "No tasks scheduled today")
+    else:
+        for time_str, tasks in visible:
+            # Highlight past/current/future
+            hour, minute = map(int, time_str.split(":"))
+            slot_time = dt.datetime(today.year, today.month, today.day, hour, minute)
+            if slot_time < now.replace(second=0, microsecond=0):
+                style = "dim"
+            elif slot_time == now.replace(second=0, microsecond=0):
+                style = "bold green"
+            else:
+                style = ""
+            task_list = ", ".join(tasks)
+            table.add_row(Text(time_str, style=style), Text(task_list, style=style))
+
+    page_info = f" ({offset + 1}-{offset + len(visible)}/{total})" if total > PAGE_SIZE else ""
+    border = "bold cyan" if focused else "dim"
+    title = f"Today's Schedule{page_info}"
     return Panel(table, title=title, border_style=border), offset
 
 
@@ -209,9 +324,6 @@ def _next_heartbeat_str(settings: dict) -> str:
 
 def build_git_panel(settings: dict, state: dict) -> Panel:
     pull_interval = settings.get("git_pull_interval_minutes", 0)
-    push_interval = settings.get("git_push_interval_minutes", 0)
-    pull_pending = GIT_PULL_TRIGGER.exists()
-    push_pending = GIT_PUSH_TRIGGER.exists()
 
     daemon = state.get("daemon", {})
     last_pull = daemon.get("last_pull_time")
@@ -221,26 +333,15 @@ def build_git_panel(settings: dict, state: dict) -> Panel:
     if pull_interval:
         countdown = _format_countdown(last_pull, pull_interval)
         suffix = countdown if countdown else ("awaiting first sync" if not last_pull else "")
-        lines.append(f"Pull: every {pull_interval} min  —  {suffix}" if suffix else f"Pull: every {pull_interval} min")
+        lines.append(f"Pull: smart, every {pull_interval} min  —  {suffix}" if suffix else f"Pull: smart, every {pull_interval} min")
     else:
         lines.append("Pull: disabled")
-    if push_interval:
-        countdown = _format_countdown(last_push, push_interval)
-        suffix = countdown if countdown else ("awaiting first sync" if not last_push else "")
-        lines.append(f"Push: every {push_interval} min  —  {suffix}" if suffix else f"Push: every {push_interval} min")
-    else:
-        lines.append("Push: disabled")
+
+    push_status = f"last: {last_push}" if last_push else "awaiting first push"
+    lines.append(f"Push: after task completion  —  {push_status}")
 
     hb_next = _next_heartbeat_str(settings)
     lines.append(f"Heartbeat email: next at {hb_next}" if hb_next not in ("disabled", "no hours configured") else f"Heartbeat email: {hb_next}")
-
-    lines.append("")
-    if pull_pending:
-        lines.append("[bold yellow]>> Pull trigger PENDING[/bold yellow]")
-    if push_pending:
-        lines.append("[bold yellow]>> Push trigger PENDING[/bold yellow]")
-    if not pull_pending and not push_pending:
-        lines.append("[dim]No pending triggers[/dim]")
 
     return Panel("\n".join(lines), title="Git Sync & Heartbeat", border_style="blue")
 
@@ -250,9 +351,10 @@ def build_help_panel() -> Panel:
     return Panel(
         "[bold]Tab[/bold] = switch section  |  "
         "[bold]Up/Down[/bold] = scroll  |  "
+        "[bold]Space[/bold] = pause/resume task  |  "
+        "[bold]r[/bold] = run task now  |  "
         "[bold]p[/bold] = git pull  |  "
         "[bold]u[/bold] = git push  |  "
-        "[bold]h[/bold] = heartbeat email  |  "
         "[bold]q[/bold] = quit",
         title="Controls",
         border_style="dim",
@@ -269,6 +371,7 @@ def build_display() -> Layout:
         focus = SECTIONS[_focus_index]
         task_offset = _scroll_offsets["tasks"]
         prof_offset = _scroll_offsets["profiling"]
+        sched_offset = _scroll_offsets["schedule"]
 
     now_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     focus_label = focus.capitalize()
@@ -279,31 +382,25 @@ def build_display() -> Layout:
 
     task_panel, task_offset = build_task_table(state, task_offset, focus == "tasks")
     prof_panel, prof_offset = build_profiling_table(state, prof_offset, focus == "profiling")
+    sched_panel, sched_offset = build_schedule_table(sched_offset, focus == "schedule")
 
     with _lock:
         _scroll_offsets["tasks"] = task_offset
         _scroll_offsets["profiling"] = prof_offset
+        _scroll_offsets["schedule"] = sched_offset
 
     layout = Layout()
     layout.split_column(
         Layout(Panel(header, border_style="blue"), name="header", size=3),
         Layout(task_panel, name="tasks"),
         Layout(prof_panel, name="profiling"),
+        Layout(sched_panel, name="schedule"),
         Layout(build_git_panel(settings, state), name="git", size=8),
         Layout(build_help_panel(), name="help", size=3),
     )
 
     return layout
 
-
-def _send_heartbeat() -> None:
-    try:
-        from sequencer import send_heartbeat_email
-        settings = load_settings()
-        hb_cfg = settings.get("heartbeat_email", {})
-        send_heartbeat_email(hb_cfg, STATE_FILE)
-    except Exception:
-        pass
 
 
 def key_listener() -> None:
@@ -332,18 +429,33 @@ def key_listener() -> None:
                 with _lock:
                     _focus_index = (_focus_index + 1) % len(SECTIONS)
             elif decoded == "p":
-                try:
-                    GIT_PULL_TRIGGER.write_text("", encoding="utf-8")
-                except OSError:
-                    pass
+                _send_command("pull")
             elif decoded == "u":
-                try:
-                    GIT_PUSH_TRIGGER.write_text("", encoding="utf-8")
-                except OSError:
-                    pass
-            elif decoded == "h":
-                threading.Thread(target=_send_heartbeat, daemon=True).start()
-        time.sleep(0.1)
+                _send_command("push")
+            elif decoded == " ":
+                with _lock:
+                    if SECTIONS[_focus_index] == "tasks" and _visible_task_keys:
+                        idx = _scroll_offsets.get("tasks", 0)
+                        page_start = _clamp_offset(idx, len(_visible_task_keys) + idx, PAGE_SIZE)
+                        row = idx - page_start
+                        if 0 <= row < len(_visible_task_keys):
+                            task_id = _visible_task_keys[row]
+                            state = load_json(STATE_FILE)
+                            paused = state.get("paused_tasks", [])
+                            if task_id in paused:
+                                _send_command(f"unpause:{task_id}")
+                            else:
+                                _send_command(f"pause:{task_id}")
+            elif decoded == "r":
+                with _lock:
+                    if SECTIONS[_focus_index] == "tasks" and _visible_task_keys:
+                        idx = _scroll_offsets.get("tasks", 0)
+                        page_start = _clamp_offset(idx, len(_visible_task_keys) + idx, PAGE_SIZE)
+                        row = idx - page_start
+                        if 0 <= row < len(_visible_task_keys):
+                            task_id = _visible_task_keys[row]
+                            _send_command(f"run:{task_id}")
+        _quit_event.wait(0.5)
 
 
 def main() -> int:

@@ -32,6 +32,22 @@ if not "%~1"=="" (
     "%UV%" add %*
 )
 
+:: Ask if user wants a full clean reinstall
+echo.
+set "CLEAN=N"
+set /p "CLEAN=Clean reinstall? Removes old Python versions + wheels before reinstalling [y/N]: "
+if /i "%CLEAN%"=="y" (
+    echo.
+    echo Cleaning bin\python...
+    if exist ".\bin\python" rd /s /q ".\bin\python"
+    echo Cleaning vendor wheels...
+    if exist "vendor" del /q vendor\*.whl 2>nul
+    for /f "usebackq" %%D in (`python %HELPER% subprojects`) do (
+        if exist "%%D\vendor" del /q "%%D\vendor\*.whl" 2>nul
+    )
+    echo Done cleaning.
+)
+
 :: Ensure all required Python versions are installed (skips if already present)
 echo.
 echo Checking portable Python versions...

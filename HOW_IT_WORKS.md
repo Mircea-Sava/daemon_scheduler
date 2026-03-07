@@ -1,10 +1,10 @@
 # How the Scheduler Works
 
-There are two sides to this system: **developers** who write and push scripts, and a **scheduler laptop** that pulls and runs them on a schedule. Both sides have **git installed** and a **cloned copy of the repo** hosted on **ASICA**.
+There are two sides to this system: **developers** who write and push scripts, and a **scheduler laptop** that pulls and runs them on a schedule. Both sides have **git installed** and a **cloned copy of the repo** hosted on a **remote git server**.
 
 ---
 
-## The Repo (on ASICA)
+## The Repo (on the Remote Server)
 
 The repo is the single source of truth. It contains:
 
@@ -13,7 +13,7 @@ repo/
   sequencer.py          # The scheduler engine
   monitor.py            # Live dashboard
   schedule.yaml         # What to run and when
-  settings.yaml         # Global config (parallelism, git intervals, email)
+  settings.yaml         # Global config (parallelism, git sync, email)
   pyproject.toml        # Root project dependencies (see "Why pyproject.toml?" below)
   developer_prep.bat    # One-time dev setup script
   run_sequencer.bat     # Starts the scheduler
@@ -35,13 +35,13 @@ repo/
 
 ## Side A: The Developer (Coder)
 
-Developers write Python scripts, configure when they run, and push to ASICA. They never need to run the scheduler themselves.
+Developers write Python scripts, configure when they run, and push to the remote repo. They never need to run the scheduler themselves.
 
 ### First-Time Setup
 
-1. Clone the repo from ASICA:
+1. Clone the repo:
    ```
-   git clone <ASICA repo URL>
+   git clone <repo URL>
    ```
 
 2. Run the prep script (only needed once, or when adding dependencies):
@@ -79,20 +79,22 @@ Developers write Python scripts, configure when they run, and push to ASICA. The
    ```
 
    Available scheduling options:
-   | Field           | Description                                      |
-   |-----------------|--------------------------------------------------|
-   | `id`            | Unique name for the task                         |
-   | `path`          | Path to the Python script (relative to repo root)|
-   | `month`         | 1-12, comma-separated (default: all)             |
-   | `month_day`     | 1-31, comma-separated (default: all)             |
-   | `week_day`      | 1-7 where 1=Mon, 7=Sun (ignored if month_day set)|
-   | `start_hour`    | 0-23 (if blank, runs every tick on matching days)|
-   | `start_minute`  | 0-59 (default: 0)                                |
-   | `frequency_min` | Repeat every N minutes (if blank, runs once)     |
-   | `end_hour`      | 0-23 (if omitted, repeats non-stop)              |
-   | `end_minute`    | 0-59 (default: 0)                                |
+   | Field             | Description                                      |
+   |-------------------|--------------------------------------------------|
+   | `id`              | Unique name for the task                         |
+   | `path`            | Path to the Python script (relative to repo root)|
+   | `month`           | 1-12, comma-separated (default: all)             |
+   | `month_day`       | 1-31, comma-separated (default: all)             |
+   | `week_day`        | 1-7 where 1=Mon, 7=Sun (ignored if month_day set)|
+   | `start_hour`      | 0-23 (if blank, runs every minute on matching days)|
+   | `start_minute`    | 0-59 (default: 0)                                |
+   | `frequency_min`   | Repeat every N minutes (if blank, runs once)     |
+   | `end_hour`        | 0-23 (if omitted, repeats non-stop)              |
+   | `end_minute`      | 0-59 (default: 0)                                |
+   | `depends_on`      | Task ID(s) that must succeed first (e.g. `"task-A"` or `"task-A, task-B"`) |
+   | `timeout_minutes` | Kill the script if it runs longer than N minutes |
 
-5. **Push to ASICA**:
+5. **Push to the remote repo**:
    ```
    git add .
    git commit -m "add daily report script"
@@ -118,13 +120,13 @@ Developers write Python scripts, configure when they run, and push to ASICA. The
 
 ## Side B: The Scheduler Laptop
 
-The scheduler laptop runs the sequencer 24/7. It does not need Python or any libraries pre-installed -- everything is bundled in the repo.
+The scheduler laptop runs the sequencer 24/7. It does not need Python or any libraries pre-installed -- everything is bundled in the repo. The scheduler uses zero CPU while idle (event-driven sleep) to prevent overheating and unnecessary battery drain.
 
 ### First-Time Setup
 
-1. Clone the repo from ASICA:
+1. Clone the repo:
    ```
-   git clone <ASICA repo URL>
+   git clone <repo URL>
    ```
 
 2. Double-click `run_sequencer.bat`. That's it.
@@ -137,7 +139,7 @@ The scheduler laptop runs the sequencer 24/7. It does not need Python or any lib
 
 ### What Happens When the Scheduler Runs
 
-The sequencer runs in **daemon mode** (`sequencer.py --daemon`), which means it never stops. Here is what happens on each cycle:
+The sequencer runs in **daemon mode** (`sequencer.py --daemon`). A daemon is a program that runs continuously in the background -- it starts, loops forever, and only stops when you close the terminal or press `Ctrl+C`. Here is what happens on each cycle:
 
 ```
    START
@@ -148,68 +150,128 @@ The sequencer runs in **daemon mode** (`sequencer.py --daemon`), which means it 
   Do the same for each subproject
      |
      v
-  +--------------------------+
-  |   EVERY MINUTE TICK      | <-- loops forever
-  |                          |
-  |  1. Git Pull Check       |
-  |     Every N minutes (default 10), or immediately
-  |     if a .git_pull_now trigger file exists:
-  |       - git pull from ASICA
-  |       - Re-sync vendored packages into .venv
-  |         (picks up any new wheels the devs pushed)
-  |                          |
-  |  2. Reload Config        |
-  |     Re-read schedule.yaml and settings.yaml
-  |     (picks up any new tasks the devs added)
-  |                          |
-  |  3. Run Scheduler Pass   |
+  +----------------------------------+
+  |   EVENT-DRIVEN SCHEDULER LOOP    | <-- loops forever
+  |                                  |
+  |  1. Reload Config                |
+  |     Re-read schedule.yaml and    |
+  |     settings.yaml (picks up any  |
+  |     new tasks the devs added)    |
+  |                                  |
+  |  2. Process Commands             |
+  |     Drain queued commands from    |
+  |     the monitor (sent via UDP):  |
+  |     pause, unpause, run-now.     |
+  |     Update paused_tasks in state.|
+  |                                  |
+  |  3. Run Scheduler Pass           |
   |     For each task in schedule.yaml:
   |       - Check if current time matches the schedule
   |       - Check if it already ran in this time slot
+  |       - Check if task is paused (skip if so)
+  |       - Check if dependencies have succeeded
   |       - If it should run: execute the script
   |         - Find the right Python interpreter
   |           (subproject venv > root venv > system)
-  |         - Run via subprocess, capture output
-  |         - Profile CPU% and RAM% usage
+  |         - Launch the script as a separate process
+  |         - Kill if timeout_minutes exceeded
+  |         - Measure CPU% and RAM% while it runs
   |         - Log result (success/failure) to daily log
-  |         - If failed: auto-retry after 60 seconds
-  |                          |
-  |  4. Git Push Check       |
-  |     Every N minutes (default 10), or immediately
-  |     if a .git_push_now trigger file exists:
-  |       - git add sequencer_state.json logs/
-  |       - git commit -m "auto: sequencer state + logs"
-  |       - git push to ASICA
-  |                          |
-  |  5. Wait for next minute |
-  +--------------------------+
+  |         - If failed: auto-retry with exponential
+  |           backoff (60s, 120s, 240s, ..., max 30m)
+  |                                  |
+  |  4. Compute Next Wake Time       |
+  |     Scan the schedule to find    |
+  |     the exact minute when the    |
+  |     next task fires. Also check  |
+  |     retry timers for failed tasks|
+  |                                  |
+  |  5. Sleep Until Next Event       |
+  |     Sleep with zero CPU until:   |
+  |       - The next task is due, OR |
+  |       - The monitor sends a      |
+  |         command via UDP          |
+  +----------------------------------+
+
+  BACKGROUND THREADS (run independently):
+
+  [Git Sync Thread]
+    - Smart pull: fetches first, only pulls when remote has new commits
+    - Push on demand: pushes immediately after any task finishes
+    - Also supports timed intervals and manual triggers
+    - Sleeps between operations (zero CPU)
+
+  [UDP Listener Thread]
+    - Listens on 127.0.0.1:19876 for commands
+    - Wakes the main loop or git thread instantly
+    - Zero CPU while waiting (OS-level blocking)
 ```
+
+### Event-Driven Sleep (Zero CPU While Idle)
+
+The scheduler is designed to use zero CPU when no tasks are running. Here is how each component achieves this:
+
+**Main loop** -- After running a scheduler pass, the sequencer calculates exactly when the next task is due by scanning the schedule forward minute-by-minute (up to a 60-minute horizon). It then calls `threading.Event.wait(timeout=seconds_until_next_task)`, which is an OS-level blocking wait -- the thread is suspended by the kernel and consumes no CPU cycles until either the timeout expires or the event is set by another thread.
+
+**UDP listener** -- A background thread calls `socket.recvfrom()` on a UDP socket bound to `127.0.0.1:19876`. This is also an OS-level blocking wait -- the thread sleeps until a packet arrives. When the monitor sends a command (pause, run, pull, push), the listener receives it, places it on a thread-safe queue, and wakes the main loop or git thread by setting their respective `threading.Event`.
+
+**Git sync thread** -- Uses **smart pull**: runs `git fetch` first and checks `git rev-list HEAD..@{u} --count` to see if the remote has new commits. Only runs `git pull` (and resyncs vendor packages) when there are actual changes -- skipping the pull entirely otherwise. For pushing, the thread wakes **immediately after any task finishes** (success or failure) to push logs and state to the remote. This means developers see results in near-real-time instead of waiting for a timed interval. The thread also supports timed intervals and manual triggers via the monitor's `p`/`u` keys.
+
+**Monitor key polling** -- The only component that polls. It checks for keyboard input every 0.5 seconds using `msvcrt.kbhit()` (Windows has no blocking keyboard API). This is 120 wakes per minute -- negligible CPU, and only runs when the monitor dashboard is open.
+
+**UDP message protocol** -- The monitor sends short UTF-8 strings over UDP:
+
+| Command | Meaning | Handled by |
+|---------|---------|------------|
+| `pull` | Force git pull now | Git sync thread |
+| `push` | Force git push now | Git sync thread |
+| `pause:<task_id>` | Pause a task | Main loop |
+| `unpause:<task_id>` | Resume a task | Main loop |
+| `run:<task_id>` | Run a task immediately | Main loop |
+
+**Why UDP?** It is the lightest possible IPC mechanism. Creating a socket, sending one packet, and closing it takes a single syscall. There is no connection setup (unlike TCP), no file I/O (unlike trigger files), and no polling needed on the receiver side. On localhost, UDP delivery is essentially guaranteed.
+
+**Laptop suspend/resume** -- When the laptop lid is closed and reopened, `Event.wait(timeout)` returns because the timeout has expired (or the OS resumes the thread). The main loop wakes, recalculates the next wake time with the current (post-resume) clock, and proceeds normally. No special handling is needed.
 
 ### Parallel Execution
 
-When `use_workers: 1` in `settings.yaml`, tasks run in parallel using a thread pool. Each task has a **worker cost** (learned from CPU/RAM profiling). The total budget defaults to `(CPU_cores - 2) * 100`. For example on an 8-core laptop: budget = 600. A task that uses ~1 core costs 100, so up to 6 such tasks can run simultaneously.
+When `use_workers: 1` in `settings.yaml`, the scheduler can run multiple tasks at the same time instead of waiting for one to finish before starting the next.
 
-### What the Scheduler Pushes Back to ASICA
+To avoid overloading the laptop, the scheduler uses a **cost budget** system:
+
+- The total budget is set by `max_workers` (default: 80). Think of this as "80% of the laptop's capacity is available for scripts, 20% is reserved for the operating system."
+- Each task has a **worker cost** -- a number representing how much CPU and RAM it uses. The scheduler learns this automatically by measuring each task while it runs (profiling).
+- Before starting a task, the scheduler checks: "Is there enough budget left?" If yes, the task runs. If not, it waits until a running task finishes and frees up budget.
+- New scripts that haven't been profiled yet start with `default_worker_cost` (default: 80, meaning "assume it's heavy until proven otherwise"). After the first run, the cost adjusts based on actual measurements.
+
+### What the Scheduler Pushes Back
 
 Only two things:
 - `sequencer_state.json` -- task run times, profiling data, in-progress state
 - `logs/` -- daily log files with task output and timestamps
 
-This lets developers check task results by pulling from ASICA.
+This lets developers check task results by pulling from the remote repo.
 
 ### The Monitor Dashboard
 
 Optionally, open a second terminal and run `run_monitor.bat` to see a live dashboard showing:
-- Task statuses (running, succeeded, failed, waiting)
+- Task statuses (running, succeeded, failed, paused)
 - CPU/RAM profiling per task
-- Git pull/push timestamps
-- Interactive controls: press `p` to force a pull, `u` to force a push, `h` for help
+- Today's schedule timeline (past, current, future slots)
+- Git sync status (smart pull countdown, last push time)
+- Interactive controls:
+  - `Tab` to switch sections
+  - `Up/Down` to scroll within a section
+  - `Space` to pause/resume the selected task
+  - `r` to run the selected task immediately
+  - `p` to force a git pull, `u` to force a push
+  - `q` to quit
 
 ### Running on Any Laptop
 
 The scheduler is fully portable. To move it to a different laptop:
 
-1. Clone the repo from ASICA
+1. Clone the repo
 2. Run `run_sequencer.bat`
 
 No installs needed. The repo carries:
@@ -219,26 +281,37 @@ No installs needed. The repo carries:
 
 The bootstrap runs automatically on first launch.
 
+### Recommended Power Settings
+
+The scheduler is designed for 24/7 operation. To prevent the laptop from sleeping (which freezes all processes -- no software can run during Windows sleep), configure Windows power settings:
+
+1. Open **Settings > System > Power & battery** (or **Control Panel > Power Options**)
+2. Set **Sleep** to **Never** (both on battery and plugged in)
+3. Set **Screen** to turn off after a few minutes (saves power without affecting the scheduler)
+4. If on a laptop, set **Close lid action** to **Do nothing** (so closing the lid doesn't trigger sleep)
+
+The scheduler uses zero CPU while idle (event-driven sleep with OS-level blocking waits), so leaving it running 24/7 does not cause overheating or unnecessary battery drain. The CPU only wakes when a task is due or a monitor command arrives.
+
 ---
 
 ## The Two-Way Git Flow
 
 ```
-  DEVELOPER                    ASICA                    SCHEDULER LAPTOP
+  DEVELOPER                    REMOTE REPO              SCHEDULER LAPTOP
   ---------                    -----                    ----------------
 
-  Write scripts       --->   git push   --->        git pull (every 10 min)
+  Write scripts       --->   git push   --->        Smart pull (fetch + check)
   Update schedule.yaml                                Re-sync packages
   Update pyproject.toml                               Run tasks on schedule
   Vendor new wheels
 
-                                                      git push (every 10 min)
+                                                      Push after each task completes
   git pull            <---   git pull   <---        Push state + logs
   Check logs/
   Check state
 ```
 
-Developers push **code, config, and wheels**. The scheduler pushes back **state and logs**. Both sides stay in sync through ASICA.
+Developers push **code, config, and wheels**. The scheduler pushes back **state and logs**. Both sides stay in sync through the remote repo.
 
 ---
 
@@ -317,11 +390,183 @@ A task "fails" when the Python script exits with a non-zero exit code (e.g. an u
 
 When a task fails:
 1. The failure is logged to the daily log file in `logs/`
-2. The task is automatically retried after `retry_delay_seconds` (default: 60 seconds)
+2. The task is automatically retried with **exponential backoff**. This means the wait time between retries doubles each time: 60 seconds after the 1st failure, then 120s, 240s, 480s, 960s, and so on. The delay is capped at `retry_max_delay_seconds` (default: 1800s = 30 minutes), so it never waits longer than that. This prevents the scheduler from hammering a broken task every minute while still retrying regularly.
 3. Retries continue indefinitely until the task succeeds or the schedule window ends
-4. If `failure_email` is enabled in `settings.yaml`, an email is sent on each failure
+4. When the task finally succeeds, the retry counter resets to 0 -- so if it fails again later, backoff starts fresh from 60s
+5. If `failure_email` is enabled in `settings.yaml`, an email notification is sent on each failure
 
 Developers can check task results by:
-- Pulling from ASICA and reading `logs/`
-- Pulling from ASICA and checking `sequencer_state.json` for task statuses
+- Pulling from the remote repo and reading `logs/`
+- Pulling from the remote repo and checking `sequencer_state.json` for task statuses
 - Running `run_monitor.bat` on the scheduler laptop to see live status
+
+## How do task dependencies work?
+
+Use `depends_on` in `schedule.yaml` to make a task wait for another task to finish successfully before it runs:
+
+```yaml
+tasks:
+  - id: "fetch-data"
+    path: "scripts/fetch.py"
+    start_hour: 9
+
+  - id: "process-data"
+    path: "scripts/process.py"
+    start_hour: 9
+    start_minute: 15
+    depends_on: "fetch-data"
+```
+
+In this example, `process-data` is scheduled at 9:15, but it will only run if `fetch-data` has already succeeded in the same time slot. If `fetch-data` failed or hasn't run yet, `process-data` is skipped. On the next tick (one minute later), the scheduler checks again -- if `fetch-data` has since succeeded (via retry), `process-data` will run.
+
+You can depend on multiple tasks by separating them with commas: `depends_on: "task-A, task-B"`. All listed tasks must succeed before the dependent task runs.
+
+A **time slot** is the minute when a task is scheduled to run. For example, a task with `start_hour: 9` and `frequency_min: 30` has time slots at 9:00, 9:30, 10:00, etc. The scheduler checks dependencies within the same slot -- a task at 9:30 checks if its dependencies succeeded since 9:30 (not from an earlier slot like 9:00).
+
+## How do task timeouts work?
+
+Use `timeout_minutes` to automatically kill a script that runs too long:
+
+```yaml
+tasks:
+  - id: "slow-report"
+    path: "scripts/report.py"
+    start_hour: 9
+    timeout_minutes: 10
+```
+
+If `report.py` is still running after 10 minutes, the scheduler forcefully kills it. The task is marked as failed, which triggers the normal retry logic (with exponential backoff). This prevents a hanging script from blocking the scheduler forever.
+
+## How does pause/resume work?
+
+You can pause and resume individual tasks from the monitor dashboard without editing `schedule.yaml`:
+
+1. Open the monitor (`run_monitor.bat`)
+2. Make sure the "tasks" section is focused (press `Tab` to switch sections)
+3. Use `Up`/`Down` arrows to select a task
+4. Press `Space` to toggle pause/resume
+
+When you pause a task, the monitor sends a UDP command (e.g. `pause:My Task`) to the sequencer on `127.0.0.1:19876`. The sequencer receives it instantly, adds the task to a `paused_tasks` list in `sequencer_state.json`, and wakes up to process the change. Paused tasks are skipped in all passes (scheduling, retries, and crash recovery).
+
+The UDP approach keeps the monitor and sequencer cleanly separated -- the monitor sends commands, and the sequencer is the only process that reads and writes the state file, avoiding any conflicts.
+
+## How does "run now" work?
+
+You can trigger any task to run immediately from the monitor, regardless of its schedule:
+
+1. Open the monitor (`run_monitor.bat`)
+2. Make sure the "tasks" section is focused (press `Tab` to switch sections)
+3. Use `Up`/`Down` arrows to select a task
+4. Press `r` to run it now
+
+This works the same way as pause/resume — the monitor sends a UDP command (e.g. `run:My Task`), and the sequencer receives it instantly and runs the task immediately, even if it's outside its normal time slot.
+
+Notes:
+- If the task is currently paused, the run-now request is ignored. Unpause it first.
+- If the task is already running or already queued for this tick, the request is ignored (no duplicate runs).
+- The task runs with all the same behavior as a scheduled run: profiling, timeout, logging, etc.
+
+## How does crash recovery work?
+
+When the scheduler starts a task, it records it in the `in_progress` section of `sequencer_state.json` before the script begins running. When the script finishes (success or failure), the entry is removed from `in_progress` and the result is saved to `last_triggered_slot`.
+
+If the laptop crashes, loses power, or restarts while a task is running, the `in_progress` entry survives because it was already written to disk. On the next startup, the scheduler sees this leftover entry and knows the task was interrupted. It re-queues the task automatically -- this is the **recovery pass**, which runs before the normal scheduling pass every tick.
+
+## How do logs work?
+
+The scheduler creates one log file per day in the `logs/` folder, named by date (e.g. `logs/2026-03-05.log`). Each log file contains timestamped entries for everything that happens: task starts, completions, failures, retries, git syncs, etc.
+
+When `log_task_output: true` in `settings.yaml` (the default), the actual output of your scripts (anything they print to the terminal) is also captured and included in the log. Set it to `false` if you don't need script output in the logs.
+
+Old log files are automatically deleted based on `log_keep_count` (default: 14). This means the scheduler keeps the last 14 daily log files and deletes anything older, preventing the `logs/` folder from growing forever.
+
+## How do heartbeat emails work?
+
+Heartbeat emails are periodic "I'm alive" messages the scheduler sends to prove it's still running. This is useful when the scheduler laptop is in a remote location and you want to know it hasn't crashed.
+
+Configure it in `settings.yaml`:
+
+```yaml
+heartbeat_email:
+  enabled: True
+  hours: 5,12,17,0          # send at these hours (0-23, comma-separated)
+  to: "you@example.com"
+  cc: ""
+  subject: "I'm ALIVE — {timestamp}"
+  body: |
+    The sequencer is still running.
+    Time: {timestamp}
+    In Progress:
+    {in_progress}
+```
+
+The scheduler checks the current hour each tick. If the hour matches one of the configured hours and a heartbeat hasn't been sent for that hour yet, it sends the email. The `{timestamp}` and `{in_progress}` placeholders are replaced with the current time and a list of currently running tasks.
+
+## How do failure emails work?
+
+When a task fails and `failure_email` is enabled in `settings.yaml`, the scheduler sends an email notification:
+
+```yaml
+failure_email:
+  enabled: True
+  to: "you@example.com"
+  cc: ""
+  subject: "Sequencer Task Failed: {task_name}"
+  body: |
+    Task '{task_name}' failed. It will keep retrying automatically.
+    Time: {timestamp}
+    Script: {script_path}
+```
+
+The `{task_name}`, `{timestamp}`, and `{script_path}` placeholders are replaced with the actual values. An email is sent on each failure -- so if a task fails and retries 5 times before succeeding, you'll get 5 emails.
+
+## What is the monitor's "Today's Schedule" view?
+
+The monitor has three sections you can switch between with `Tab`: **tasks**, **profiling**, and **schedule**.
+
+The **schedule** section shows a timeline of today's schedule -- every time slot where at least one task is configured to run. Past slots are dimmed, the current slot is highlighted in green, and future slots are shown normally. This lets you quickly see what ran, what's running now, and what's coming up -- without having to mentally parse `schedule.yaml`.
+
+## Command-Line Flags
+
+The sequencer supports these flags when run directly (outside of `run_sequencer.bat`):
+
+| Flag | Example | Description |
+|------|---------|-------------|
+| `--config <path>` | `--config schedule.yaml` | Which schedule file to use (default: `schedule.yaml`) |
+| `--daemon` | `--daemon` | Run continuously forever, checking every minute. This is what `run_sequencer.bat` uses. Without this flag, the sequencer runs **one pass** and exits |
+| `--dry-run` | `--dry-run` | Show which tasks would run at the current time without actually executing any scripts. Useful for testing your schedule |
+| `--now <time>` | `--now 2026-12-25T09:00` | Pretend it's a different date/time. Useful for testing whether your schedule triggers correctly on specific dates. Cannot be combined with `--daemon` |
+
+**Examples:**
+
+```
+# Normal production usage (what run_sequencer.bat does):
+python sequencer.py --daemon
+
+# Test what would run right now without executing anything:
+python sequencer.py --dry-run
+
+# Test what would run on Christmas morning at 9 AM:
+python sequencer.py --now 2026-12-25T09:00 --dry-run
+
+# Run one pass and exit (useful for cron-style setups):
+python sequencer.py --config schedule.yaml
+```
+
+## Settings Reference
+
+All settings live in `settings.yaml`. Here is a complete reference:
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `retry_delay_seconds` | 60 | Initial delay (in seconds) before retrying a failed task |
+| `retry_max_delay_seconds` | 1800 | Maximum retry delay (30 min). Backoff doubles each time but never exceeds this |
+| `use_workers` | 1 | `1` = run tasks in parallel, `0` = run one at a time |
+| `max_workers` | 80 | Total budget for parallel tasks (80 = 80% of capacity for scripts) |
+| `default_worker_cost` | 80 | Cost assigned to new scripts before profiling data exists |
+| `log_task_output` | true | Capture script output (print statements) into daily log files |
+| `log_keep_count` | 14 | Keep this many daily log files, auto-delete older ones |
+| `git_pull_interval_minutes` | 10 | How often to smart-pull from the remote repo (0 = disabled). Fetches first, only pulls when remote has new commits. |
+| *(push is event-driven)* | — | Push happens automatically after each task completes. Also supports on-demand push via monitor (`u` key). |
+| `failure_email.enabled` | false | Send an email when a task fails |
+| `heartbeat_email.enabled` | false | Send periodic "I'm alive" emails |

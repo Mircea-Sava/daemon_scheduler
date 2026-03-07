@@ -1,20 +1,20 @@
 settings:
-  retry_delay_seconds: 60
-  use_workers: 1               # 0 = sequential, 1 = parallel (auto-profile via psutil)
-# If 0 runs tasks one at a time
-# If 1 runs tasks in parallel with auto-profiled worker costs (stored in sequencer_state.json under profiling)
+  retry_delay_seconds: 60          # initial delay after first failure
+  retry_max_delay_seconds: 1800    # cap backoff at 30 min (60, 120, 240, 480, 960, 1800, 1800, ...)
   
-  max_workers: "auto-2 * 100"  # e.g. (8 - 2) * 100 = 600 where 100 = 1 logical processor
-  default_worker_cost: 100  # Default cost for new/unprofiled scripts. Can also set to "auto-2 * 100"
-  state_file: "sequencer_state.json"
+  use_workers: 1                   # 0 = sequential, 1 = parallel (auto-profile via psutil)
+  max_workers: 80                  # 80 = reserve 80% capacity for scripts, 20% for OS
+  default_worker_cost: 80          # Default cost for new/unprofiled scripts
+  
   log_task_output: true            # true = capture and log script, false = discard
+  log_keep_count: 14               # keep this many daily log files, delete oldest beyond this
   
-  git_pull_interval_minutes: 10    # 0 = disabled. Also supports on-demand pull via monitor dashboard.
-  git_push_interval_minutes: 10    # 0 = disabled. Commits & pushes state + logs. Also supports on-demand push via monitor dashboard.
+  git_pull_interval_minutes: 10    # 0 = disabled. Smart pull: only pulls when remote has new commits.
+  # Push is event-driven: pushes automatically after each task completes. Also supports on-demand push via monitor (u key).
   
   failure_email:
     enabled: False
-    to: "mirceasava51@yahoo.ca"
+    to: ""
     cc: ""
     subject: "Sequencer Task Failed: {task_name}"
     body: |
@@ -26,7 +26,7 @@ settings:
   heartbeat_email:
     enabled: False
     hours: 5,12,17,0 # Comma-seperated, 0-23
-    to: "mirceasava51@yahoo.ca"
+    to: ""
     cc: ""
     subject: "I'm ALIVE — {timestamp}"
     body: |
