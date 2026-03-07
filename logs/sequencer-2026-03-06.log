@@ -1,0 +1,60 @@
+[2026-03-06 21:04:59.231] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-03-06 21:04:59.474] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-03-06 21:04:59.561] Parallel mode enabled (use_workers=1). max_workers=80
+[2026-03-06 21:04:59.563] [Warn] State file C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\sequencer_state.json is unreadable. Resetting it.
+[2026-03-06 21:04:59.564] Heartbeat: 2026-03-06 21:04
+[2026-03-06 21:04:59.565] [Profile] Test Script 1 using dynamic cost=80
+[2026-03-06 21:04:59.567] [Profile] Test Script 2 using dynamic cost=80
+[2026-03-06 21:04:59.568] Executing 2 task(s) with slot capacity=80 and thread_workers=2.
+[2026-03-06 21:04:59.571] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-03-06 21:04:59.748491] Test Script 1 finished!
+[2026-03-06 21:04:59.777] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-03-06 21:04:59.778] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-03-06 21:04:59.778] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-03-06 21:05:00.873457 | Success |
++--------------------------------------+
+[2026-03-06 21:05:00.934] [Success] Test Script 2 completed. peak_ram=0.3% avg_cpu=0.0%
+[2026-03-06 21:05:00.936] [Profile] Test Script 2: peak_ram=0.3% avg_cpu=0.0% -> learned_cost=1
+[2026-03-06 21:05:00.939] Run completed successfully.
+[2026-03-06 23:14:56.922] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-03-06 23:14:56.981] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-03-06 23:14:57.018] Parallel mode enabled (use_workers=1). max_workers=80
+[2026-03-06 23:14:57.020] Heartbeat: 2026-03-06 23:14
+[2026-03-06 23:14:57.021] [Profile] Test Script 1 using dynamic cost=1
+[2026-03-06 23:14:57.023] [Profile] Test Script 2 using dynamic cost=1
+[2026-03-06 23:14:57.025] Executing 2 task(s) with slot capacity=80 and thread_workers=2.
+[2026-03-06 23:14:57.025] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-03-06 23:14:57.025] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-03-06 23:14:57.131897] Test Script 1 finished!
+[2026-03-06 23:14:57.164] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-03-06 23:14:57.165] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-03-06 23:14:57.422988 | Success |
++--------------------------------------+
+[2026-03-06 23:14:57.523] [Success] Test Script 2 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-03-06 23:14:57.527] [Profile] Test Script 2: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-03-06 23:14:57.531] Run completed successfully.
+[2026-03-06 23:15:04.893] [Bootstrap] Using venv interpreter: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe
+[2026-03-06 23:15:04.954] [Bootstrap] Subproject test2_project: C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe
+[2026-03-06 23:15:04.956] [Daemon] SchedulerContext initialized (max_workers=80).
+[2026-03-06 23:15:04.959] Starting daemon mode (event-driven sleep).
+[2026-03-06 23:15:04.969] [Background] Git sync thread started (30s interval).
+[2026-03-06 23:15:04.973] [Background] UDP wake listener on 127.0.0.1:19876.
+[2026-03-06 23:15:04.998] Parallel mode enabled (use_workers=1). max_workers=80
+[2026-03-06 23:15:04.998] Heartbeat: 2026-03-06 23:15
+[2026-03-06 23:15:04.998] [Profile] Test Script 1 using dynamic cost=1
+[2026-03-06 23:15:04.998] [Profile] Test Script 2 using dynamic cost=1
+[2026-03-06 23:15:04.998] Executing 2 task(s) with slot capacity=80 and thread_workers=2.
+[2026-03-06 23:15:05.013] Executing (profiled): Test Script 1 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\.venv\Scripts\python.exe)
+[2026-03-06 23:15:05.013] Executing (profiled): Test Script 2 (python=C:\Users\Mircea Ioan\OneDrive\Documents\1_SCHEDULER\test2_project\.venv\Scripts\python.exe)
+[2026-03-06 23:15:05.029] [Sleep] Next wake in 55s
+[2026-03-06 23:15:05.103492] Test Script 1 finished!
+[2026-03-06 23:15:05.131] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=12.2%
+[2026-03-06 23:15:05.131] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=12.2% -> learned_cost=12

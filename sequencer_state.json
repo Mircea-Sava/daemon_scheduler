@@ -1,34 +1,43 @@
 {
   "last_triggered_slot": {
     "Test Script 1": {
-      "slot": "2026-02-28 19:18",
-      "last_run": "2026-02-28 19:18:40",
-      "outcome": "success"
+      "slot": "2026-03-06 23:15",
+      "last_run": "2026-03-06 23:15:05",
+      "outcome": "success",
+      "retry_count": 0
     },
     "Test Script 2": {
-      "slot": "2026-02-28 19:18",
-      "last_run": "2026-02-28 19:18:41",
-      "outcome": "success"
+      "slot": "2026-03-06 23:14",
+      "last_run": "2026-03-06 23:14:57",
+      "outcome": "success",
+      "retry_count": 0
     }
   },
-  "in_progress": {},
+  "in_progress": {
+    "Test Script 2": {
+      "task_name": "Test Script 2",
+      "script_path": "C:\\Users\\Mircea Ioan\\OneDrive\\Documents\\1_SCHEDULER\\test2_project\\test2.py",
+      "worker_cost": 1,
+      "slot_key": "2026-03-06 23:15",
+      "started_at": "2026-03-06 23:15:05",
+      "is_recovery": false
+    }
+  },
   "profiling": {
     "Test Script 1": {
-      "file_hash": "92fa7a816c32742d4595b81d21bf0b460e9349780c9d057cc83e283f88306370",
+      "peak_ram_pct": 0.04,
+      "avg_cpu_pct": 12.21,
+      "learned_cost": 12
+    },
+    "Test Script 2": {
       "peak_ram_pct": 0.04,
       "avg_cpu_pct": 0.0,
       "learned_cost": 1
-    },
-    "Test Script 2": {
-      "file_hash": "853db307f8c6509f44e53359b1504d3a3f124c0bf5bb68ee45355cbe1c6c7353",
-      "peak_ram_pct": 0.29,
-      "avg_cpu_pct": 0.0,
-      "learned_cost": 1
     }
   },
+  "paused_tasks": [],
   "daemon": {
-    "last_pull_time": "2026-02-28 19:18:40",
-    "last_push_time": "2026-02-28 19:18:40",
-    "last_heartbeat_hour": null
+    "last_pull_time": "2026-03-06 23:15:04",
+    "last_push_time": "2026-03-06 23:15:04"
   }
 }
