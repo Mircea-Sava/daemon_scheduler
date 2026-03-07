@@ -108,9 +108,3 @@ For the full technical breakdown, see **[HOW_IT_WORKS.md](HOW_IT_WORKS.md)**.
 ## Requirements
 
 **Just git.** Everything else is in the repo.
-
-| Component | Where | What it does |
-|-----------|-------|-------------|
-| Python | `bin/python/` | Runs your scripts (no install needed) |
-| Package manager | `bin/uv.exe` | Installs libraries from bundled files |
-| Libraries | `vendor/` | Pre-downloaded, works offline |
