@@ -93,3 +93,11 @@ tasks:
     path: "test2_project/test2.py"
     frequency_min: 1
 
+#  - id: "Heartbeat Email"
+#    path: "emails/heartbeat_email.py"
+#    times: "5:00, 12:00, 17:00, 0:00"
+
+#  - id: "Error Email"
+#    path: "emails/error_email.py"
+#    times: "5:00, 12:00, 17:00, 0:00"
+

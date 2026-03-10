@@ -1251,7 +1251,6 @@ def run_task(
     script_path: Path,
     working_directory: Path,
     dry_run: bool,
-    email_config: dict[str, Any] | None = None,
     log_task_output: bool = True,
     lib_pythonpath: str = "",
     interpreter: str | None = None,
@@ -1290,9 +1289,6 @@ def run_task(
         log(f"[Error] {task_name} failed with exit code {exc.returncode}.")
     except Exception as exc:
         log(f"[Error] {task_name} failed unexpectedly: {exc}")
-
-    if email_config:
-        send_failure_email(email_config, task_name, script_path)
 
     return False
 
@@ -1356,7 +1352,6 @@ def run_task_profiled(
     script_path: Path,
     working_directory: Path,
     dry_run: bool,
-    email_config: dict[str, Any] | None = None,
     log_task_output: bool = True,
     lib_pythonpath: str = "",
     interpreter: str | None = None,
@@ -1379,7 +1374,6 @@ def run_task_profiled(
             script_path=script_path,
             working_directory=working_directory,
             dry_run=dry_run,
-            email_config=email_config,
             log_task_output=log_task_output,
             lib_pythonpath=lib_pythonpath,
             interpreter=interpreter,
@@ -1509,9 +1503,6 @@ def run_task_profiled(
     nonzero_cpu = [s for s in cpu_samples if s > 0]
     avg_cpu = (sum(nonzero_cpu) / len(nonzero_cpu)) if nonzero_cpu else 0.0
 
-    if email_config:
-        send_failure_email(email_config, task_name, script_path)
-
     return False, peak_ram_pct, avg_cpu
 
 
@@ -1522,7 +1513,6 @@ def run_with_slots(
     slot_limiter: WorkerSlotLimiter,
     working_directory: Path,
     dry_run: bool,
-    email_config: dict[str, Any] | None = None,
     log_task_output: bool = True,
     lib_pythonpath: str = "",
     interpreter: str | None = None,
@@ -1537,7 +1527,6 @@ def run_with_slots(
                 script_path=script_path,
                 working_directory=working_directory,
                 dry_run=dry_run,
-                email_config=email_config,
                 log_task_output=log_task_output,
                 lib_pythonpath=lib_pythonpath,
                 interpreter=interpreter,
@@ -1548,7 +1537,6 @@ def run_with_slots(
             script_path=script_path,
             working_directory=working_directory,
             dry_run=dry_run,
-            email_config=email_config,
             log_task_output=log_task_output,
             lib_pythonpath=lib_pythonpath,
             interpreter=interpreter,
@@ -1558,147 +1546,6 @@ def run_with_slots(
         slot_limiter.release(worker_cost)
 
 
-def send_failure_email(
-    email_config: dict[str, Any],
-    task_name: str,
-    script_path: Path,
-) -> None:
-    """Send an Outlook email via win32com when a task fails."""
-    if not email_config.get("enabled", False):
-        return
-
-    to = email_config.get("to", "")
-    if not to:
-        log("[Email] No recipient configured in failure_email.to — skipping.")
-        return
-
-    placeholders = {
-        "task_name": task_name,
-        "script_path": str(script_path),
-        "timestamp": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    }
-
-    subject = email_config.get("subject", "Sequencer Task Failed: {task_name}")
-    body = email_config.get(
-        "body",
-        "Task '{task_name}' failed.\n"
-        "Time: {timestamp}\nScript: {script_path}",
-    )
-
-    for key, val in placeholders.items():
-        subject = subject.replace("{" + key + "}", val)
-        body = body.replace("{" + key + "}", val)
-
-    try:
-        import time as _time
-        import pythoncom
-        import win32com.client  # noqa: delayed import
-        import win32gui
-
-        pythoncom.CoInitialize()
-        try:
-            outlook = win32com.client.Dispatch("Outlook.Application")
-            mail = outlook.CreateItem(0)
-            mail.To = to
-            cc = email_config.get("cc", "")
-            if cc:
-                mail.CC = cc
-            mail.Subject = subject
-            mail.Body = body
-            mail.Display()
-            _time.sleep(1)
-            # Find the Outlook compose window and force it to foreground
-            hwnd = win32gui.FindWindow("rctrl_renwnd32", None)
-            if hwnd:
-                win32gui.SetForegroundWindow(hwnd)
-                _time.sleep(0.3)
-            shell = win32com.client.Dispatch("WScript.Shell")
-            shell.SendKeys("%s")  # Alt+S to send
-            log(f"[Email] Failure email sent to {to} for task '{task_name}'.")
-            del shell, mail, outlook
-        finally:
-            pythoncom.CoUninitialize()
-    except ImportError:
-        log("[Email] win32com/pythoncom is not installed — cannot send email.")
-    except Exception as exc:
-        log(f"[Email] Failed to send email: {exc}")
-
-
-def send_heartbeat_email(
-    email_config: dict[str, Any],
-    state_path: Path,
-) -> None:
-    """Send a periodic heartbeat email with the current in_progress state."""
-    if not email_config.get("enabled", False):
-        return
-
-    to = email_config.get("to", "")
-    if not to:
-        log("[Heartbeat] No recipient configured in heartbeat_email.to — skipping.")
-        return
-
-    # Read current state for in_progress
-    in_progress_text = "(state file not found)"
-    try:
-        state = load_state(state_path)
-        in_progress = state.get("in_progress", {})
-        if in_progress:
-            in_progress_text = json.dumps(in_progress, indent=2)
-        else:
-            in_progress_text = "No tasks currently in progress."
-    except Exception:
-        pass
-
-    timestamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    subject = email_config.get("subject", "Sequencer Heartbeat — {timestamp}")
-    body = email_config.get(
-        "body",
-        "The sequencer is still running.\n\n"
-        "Time: {timestamp}\n\n"
-        "In Progress:\n{in_progress}",
-    )
-
-    placeholders = {
-        "timestamp": timestamp,
-        "in_progress": in_progress_text,
-    }
-    for key, val in placeholders.items():
-        subject = subject.replace("{" + key + "}", val)
-        body = body.replace("{" + key + "}", val)
-
-    try:
-        import time as _time
-        import pythoncom
-        import win32com.client  # noqa: delayed import
-        import win32gui
-
-        pythoncom.CoInitialize()
-        try:
-            outlook = win32com.client.Dispatch("Outlook.Application")
-            mail = outlook.CreateItem(0)
-            mail.To = to
-            cc = email_config.get("cc", "")
-            if cc:
-                mail.CC = cc
-            mail.Subject = subject
-            mail.Body = body
-            mail.Display()
-            _time.sleep(1)
-            # Find the Outlook compose window and force it to foreground
-            hwnd = win32gui.FindWindow("rctrl_renwnd32", None)
-            if hwnd:
-                win32gui.SetForegroundWindow(hwnd)
-                _time.sleep(0.3)
-            shell = win32com.client.Dispatch("WScript.Shell")
-            shell.SendKeys("%s")  # Alt+S to send
-            log(f"[Heartbeat] Email sent to {to}.")
-            del shell, mail, outlook
-        finally:
-            pythoncom.CoUninitialize()
-    except ImportError:
-        log("[Heartbeat] win32com/pythoncom is not installed — cannot send email.")
-    except Exception as exc:
-        log(f"[Heartbeat] Failed to send email: {exc}")
 
 
 def task_key(task: dict[str, Any]) -> str:
@@ -1739,7 +1586,6 @@ def run_scheduler_pass(
     configure_log_runtime(config_path, settings)
     retry_delay_seconds = float(settings.get("retry_delay_seconds", 60))
     retry_max_delay_seconds = float(settings.get("retry_max_delay_seconds", 1800))
-    email_config = settings.get("failure_email") or {}
     log_task_output = settings.get("log_task_output", True) is not False
     use_workers_raw = to_int(settings.get("use_workers"), 1)
     default_worker_cost = parse_worker_setting(settings.get("default_worker_cost", 100), 100)
@@ -2208,7 +2054,7 @@ def run_scheduler_pass(
                         slot_limiter=ctx.slot_limiter,
                         working_directory=config_path.parent,
                         dry_run=dry_run,
-                        email_config=email_config,
+
                         log_task_output=log_task_output,
                         lib_pythonpath=lib_pythonpath,
                         interpreter=task_run.get("interpreter"),
@@ -2221,7 +2067,7 @@ def run_scheduler_pass(
                         script_path=task_run["script_path"],
                         working_directory=config_path.parent,
                         dry_run=dry_run,
-                        email_config=email_config,
+
                         log_task_output=log_task_output,
                         lib_pythonpath=lib_pythonpath,
                         interpreter=task_run.get("interpreter"),
@@ -2264,7 +2110,6 @@ def run_scheduler_pass(
                 script_path=script_path,
                 working_directory=config_path.parent,
                 dry_run=dry_run,
-                email_config=email_config,
                 log_task_output=log_task_output,
                 lib_pythonpath=lib_pythonpath,
                 interpreter=task_run.get("interpreter"),
@@ -2294,7 +2139,6 @@ def run_scheduler_pass(
                 slot_limiter=slot_limiter,
                 working_directory=config_path.parent,
                 dry_run=dry_run,
-                email_config=email_config,
                 log_task_output=log_task_output,
                 lib_pythonpath=lib_pythonpath,
                 interpreter=task_run.get("interpreter"),
@@ -2373,7 +2217,6 @@ def main() -> int:
             return 1
 
         startup_settings = startup_config.get("settings") or {}
-        last_heartbeat_hour: int | None = None
 
         # --- Initialize SchedulerContext ---
         state_path = (config_path.parent / "sequencer_state.json").resolve()
@@ -2520,28 +2363,6 @@ def main() -> int:
                     log(f"[Error] {exc}")
                 except Exception as exc:
                     log(f"[Error] Daemon tick failed unexpectedly: {exc}")
-
-                # --- heartbeat email check ---
-                try:
-                    cfg = load_config(config_path)
-                    hb_email_cfg = (cfg.get("settings") or {}).get("heartbeat_email") or {}
-                    if hb_email_cfg.get("enabled", False):
-                        now_hb = dt.datetime.now()
-                        hb_hours_raw = hb_email_cfg.get("hours")
-                        if hb_hours_raw is not None:
-                            allowed_hours = {int(h.strip()) for h in str(hb_hours_raw).split(",") if h.strip()}
-                        else:
-                            allowed_hours = set(range(24))
-                        if now_hb.hour in allowed_hours and last_heartbeat_hour != now_hb.hour:
-                            send_heartbeat_email(hb_email_cfg, state_path)
-                            last_heartbeat_hour = now_hb.hour
-                            with ctx.state_lock:
-                                if "daemon" not in ctx.state:
-                                    ctx.state["daemon"] = {}
-                                ctx.state["daemon"]["last_heartbeat_hour"] = last_heartbeat_hour
-                                save_state(ctx.state_path, ctx.state)
-                except Exception as exc:
-                    log(f"[Heartbeat] Error: {exc}")
 
                 # --- event-driven sleep until next job ---
                 try:

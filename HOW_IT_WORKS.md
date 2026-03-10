@@ -407,7 +407,7 @@ When a task fails:
 2. The task is automatically retried with **exponential backoff**. This means the wait time between retries doubles each time: 60 seconds after the 1st failure, then 120s, 240s, 480s, 960s, and so on. The delay is capped at `retry_max_delay_seconds` (default: 1800s = 30 minutes), so it never waits longer than that. This prevents the scheduler from hammering a broken task every minute while still retrying regularly.
 3. Retries continue indefinitely until the task succeeds or the schedule window ends
 4. When the task finally succeeds, the retry counter resets to 0, so if it fails again later, backoff starts fresh from 60s
-5. If `failure_email` is enabled in `settings.yaml`, an email notification is sent on each failure
+5. If `error_email.py` is scheduled in `schedule.yaml`, it will report the failure in its next summary email
 
 Developers can check task results by:
 - Pulling from the remote repo and reading `logs/`
@@ -504,45 +504,44 @@ When `log_task_output: true` in `settings.yaml` (the default), the actual output
 
 Old log files are automatically deleted based on `log_keep_count` (default: 14). This means the scheduler keeps the last 14 daily log files and deletes anything older, preventing the `logs/` folder from growing forever.
 
-## How do heartbeat emails work?
+## How do email notifications work?
 
-Heartbeat emails are periodic "I'm alive" messages the scheduler sends to prove it's still running. This is useful when the scheduler laptop is in a remote location and you want to know it hasn't crashed.
+Email notifications are handled by two standalone scripts that the sequencer runs as scheduled tasks, just like any other script. They are not built into the sequencer itself. This keeps them isolated: if email sending fails or hangs, it does not affect the scheduler or any other running tasks.
 
-Configure it in `settings.yaml`:
+- **`heartbeat_email.py`** sends a periodic "I'm alive" email to confirm the scheduler is still running. Useful when the scheduler laptop is in a remote location.
+- **`error_email.py`** reads `sequencer_state.json`, checks for failed tasks, and sends a summary email. If no tasks have failed, no email is sent.
 
-```yaml
-heartbeat_email:
-  enabled: True
-  hours: 5,12,17,0          # send at these hours (0-23, comma-separated)
-  to: "you@example.com"
-  cc: ""
-  subject: "I'm ALIVE — {timestamp}"
-  body: |
-    The sequencer is still running.
-    Time: {timestamp}
-    In Progress:
-    {in_progress}
-```
-
-The scheduler checks the current hour each tick. If the hour matches one of the configured hours and a heartbeat hasn't been sent for that hour yet, it sends the email. The `{timestamp}` and `{in_progress}` placeholders are replaced with the current time and a list of currently running tasks.
-
-## How do failure emails work?
-
-When a task fails and `failure_email` is enabled in `settings.yaml`, the scheduler sends an email notification:
+Both scripts read their SMTP configuration from `settings.yaml`:
 
 ```yaml
-failure_email:
-  enabled: True
-  to: "you@example.com"
-  cc: ""
-  subject: "Sequencer Task Failed: {task_name}"
-  body: |
-    Task '{task_name}' failed. It will keep retrying automatically.
-    Time: {timestamp}
-    Script: {script_path}
+email:
+  smtp_server: "mailhub.utc.com"
+  smtp_port: 25                        # 25 = no auth, 587 = TLS + auth
+  from: "sender@example.com"
+  to: "recipient@example.com"
+  cc: "cc1@example.com;cc2@example.com"
+  # username: ""                       # uncomment for authenticated SMTP (port 587)
+  # password: ""                       # app password, not your real password
 ```
 
-The `{task_name}`, `{timestamp}`, and `{script_path}` placeholders are replaced with the actual values. An email is sent on each failure, so if a task fails and retries 5 times before succeeding, you'll get 5 emails.
+Their schedule is configured in `schedule.yaml` like any other task:
+
+```yaml
+  - id: "Heartbeat Email"
+    path: "emails/heartbeat_email.py"
+    times: "5:00, 12:00, 17:00, 0:00"
+
+  - id: "Error Email"
+    path: "emails/error_email.py"
+    times: "5:00, 12:00, 17:00, 0:00"
+```
+
+### SMTP setup
+
+The scripts send email via SMTP (Simple Mail Transfer Protocol). Two modes are supported:
+
+- **Internal relay (no auth):** Most companies have an internal mail relay server (e.g. `mailhub.utc.com`). It accepts emails from machines on the corporate network without requiring a username or password. Use `smtp_port: 25` and leave `username`/`password` commented out. If you don't know your company's relay hostname, ask your IT team.
+- **Authenticated (TLS):** For public email providers like Gmail (`smtp.gmail.com`) or Outlook.com (`smtp-mail.outlook.com`), use `smtp_port: 587` and fill in `username` and `password`. The scripts will automatically use TLS encryption and authenticate before sending. Note: some corporate firewalls block outbound connections to external SMTP servers on port 587. If that's the case, use your company's internal relay instead.
 
 ## What is the monitor's "Today's Schedule" view?
 
@@ -615,5 +614,10 @@ All settings live in `settings.yaml`. Here is a complete reference:
 | `log_keep_count` | 14 | Keep this many daily log files, auto-delete older ones |
 | `git_pull_interval_minutes` | 10 | How often to smart-pull from the remote repo (0 = disabled). Fetches first, only pulls when remote has new commits. |
 | *(push is event-driven)* | — | Push happens automatically after each task completes. Also supports on-demand push via monitor (`u` key). |
-| `failure_email.enabled` | false | Send an email when a task fails |
-| `heartbeat_email.enabled` | false | Send periodic "I'm alive" emails |
+| `email.smtp_server` | *(required)* | SMTP server hostname (e.g. `mailhub.utc.com`). Ask your IT team for the internal relay. |
+| `email.smtp_port` | 25 | `25` for internal relays (no auth), `587` for public providers (TLS + auth) |
+| `email.from` | *(required)* | Sender email address |
+| `email.to` | *(required)* | Recipient email address |
+| `email.cc` | `""` | CC addresses, semicolon-separated |
+| `email.username` | `""` | SMTP username (only for port 587 with TLS) |
+| `email.password` | `""` | SMTP password / app password (only for port 587 with TLS) |

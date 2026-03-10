@@ -12,27 +12,11 @@ settings:
   git_pull_interval_minutes: 10    # 0 = disabled. Smart pull: only pulls when remote has new commits.
   # Push is event-driven: pushes automatically after each task completes. Also supports on-demand push via monitor (u key).
   
-  failure_email:
-    enabled: False
+  email:
+    smtp_server: "" #mailhub.utc.com depends of IT's SMTP server
+    smtp_port: 25                        # 25 = no auth, 587 = TLS + auth
+    from: "" #GP.PWC.SPS.DATASUPPORT@PRATTWHITNEY.COM depends of IT's SMTP server
     to: ""
     cc: ""
-    subject: "Sequencer Task Failed: {task_name}"
-    body: |
-      Task '{task_name}' failed. It will keep retrying automatically.
-
-      Time: {timestamp}
-      Script: {script_path}
-  
-  heartbeat_email:
-    enabled: False
-    hours: 5,12,17,0 # Comma-seperated, 0-23
-    to: ""
-    cc: ""
-    subject: "I'm ALIVE — {timestamp}"
-    body: |
-      The sequencer is still running.
-
-      Time: {timestamp}
-
-      In Progress:
-      {in_progress}
+    # username: ""                       # uncomment for authenticated SMTP (port 587)
+    # password: ""                       # app password, not your real password
