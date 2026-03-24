@@ -508,7 +508,7 @@ Old log files are automatically deleted based on `log_keep_count` (default: 14).
 
 Email notifications are handled by two standalone scripts that the sequencer runs as scheduled tasks, just like any other script. They are not built into the sequencer itself. This keeps them isolated: if email sending fails or hangs, it does not affect the scheduler or any other running tasks.
 
-- **`heartbeat_email.py`** sends a periodic "I'm alive" email to confirm the scheduler is still running. Useful when the scheduler laptop is in a remote location.
+- **`daily_report_email.py`** reads `sequencer_state.json` and `schedule.yaml` to build a full status report: successful tasks, failed tasks, missed tasks, and paused tasks. If nothing ran and nothing was missed, no email is sent.
 - **`error_email.py`** reads `sequencer_state.json`, checks for failed tasks, and sends a summary email. If no tasks have failed, no email is sent.
 
 Both scripts read their SMTP configuration from `settings.yaml`:
@@ -527,9 +527,9 @@ email:
 Their schedule is configured in `schedule.yaml` like any other task:
 
 ```yaml
-  - id: "Heartbeat Email"
-    path: "emails/heartbeat_email.py"
-    times: "5:00, 12:00, 17:00, 0:00"
+  - id: "Daily Report"
+    path: "emails/daily_report_email.py"
+    times: "7:00, 12:00, 17:00"
 
   - id: "Error Email"
     path: "emails/error_email.py"

@@ -303,6 +303,12 @@ class SchedulerContext:
         self.command_queue: queue.Queue[str] = queue.Queue()
         self.slot_limiter = WorkerSlotLimiter(max_workers)
         self.actively_running: set[str] = set()
+        # Event-driven dependency resolution state.
+        self._dep_only_tasks: list[dict[str, Any]] = []
+        self._all_validated_tasks: list[dict[str, Any]] = []
+        self._dep_trigger_callback: Any = None  # set per scheduler pass
+        self._dep_queued: set[str] = set()
+        self._dep_queued_lock = threading.Lock()
         self._executor = ThreadPoolExecutor(
             max_workers=max_workers,
             thread_name_prefix="seq-worker",
@@ -348,6 +354,16 @@ class SchedulerContext:
         # Trigger immediate git push so logs + state reach remote fast.
         self.command_queue.put("push")
         self.git_wake_event.set()
+        # Event-driven: if this task succeeded, check for dependency-only tasks to trigger.
+        if success:
+            # Resolve key -> task name for the finished task.
+            finished_name = None
+            for t in self._all_validated_tasks:
+                if task_key(t) == key:
+                    finished_name = t["name"]
+                    break
+            if finished_name:
+                self._check_and_queue_dependents(finished_name)
 
     def clear_recovery_entry(self, key: str) -> None:
         with self.state_lock:
@@ -376,6 +392,46 @@ class SchedulerContext:
 
     def is_task_actively_running(self, key: str) -> bool:
         return key in self.actively_running
+
+    def _check_and_queue_dependents(self, finished_task_name: str) -> None:
+        """After a task succeeds, queue any dependency-only tasks whose deps are all met."""
+        paused = set(self.state.get("paused_tasks", []))
+        for task in self._dep_only_tasks:
+            dep_key = task_key(task)
+            if dep_key in paused:
+                continue
+            if self.is_task_actively_running(dep_key):
+                continue
+            # Prevent double-queuing from concurrent threads.
+            with self._dep_queued_lock:
+                if dep_key in self._dep_queued:
+                    continue
+            # Does this task depend on the one that just finished?
+            deps = task.get("_depends_on", [])
+            if finished_task_name not in deps:
+                continue
+            # Check ALL dependencies are satisfied.
+            all_ok = True
+            with self.state_lock:
+                for dep_name in deps:
+                    dep_task_key = next(
+                        (task_key(t) for t in self._all_validated_tasks if t["name"] == dep_name),
+                        None,
+                    )
+                    if dep_task_key is None:
+                        all_ok = False
+                        break
+                    entry = self.last_triggered_slot.get(dep_task_key)
+                    if not (isinstance(entry, dict) and entry.get("outcome") == "success"):
+                        all_ok = False
+                        break
+            if all_ok:
+                with self._dep_queued_lock:
+                    if dep_key in self._dep_queued:
+                        continue
+                    self._dep_queued.add(dep_key)
+                if self._dep_trigger_callback:
+                    self._dep_trigger_callback(task)
 
 
 def parse_args() -> argparse.Namespace:
@@ -1129,6 +1185,11 @@ def validate_task(task: Any, index: int) -> dict[str, Any]:
     else:
         task_copy["_depends_on"] = []
 
+    # Dependency-only flag: has depends_on but no schedule fields.
+    _SCHEDULE_FIELDS = ("start_hour", "frequency_min", "times", "month", "month_day", "week_day")
+    has_schedule = any(task.get(f) is not None for f in _SCHEDULE_FIELDS)
+    task_copy["_dependency_only"] = bool(task_copy["_depends_on"]) and not has_schedule
+
     # Task timeout.
     raw_timeout = task.get("timeout_minutes")
     if raw_timeout is not None:
@@ -1216,6 +1277,8 @@ def compute_next_wake_time(
 
     # A. Next scheduled-task fire time
     for task in validated_tasks:
+        if task.get("_dependency_only"):
+            continue  # triggered by event, not by schedule
         if task.get("id") in paused_tasks:
             continue
         for offset in range(1, max_horizon_minutes + 1):
@@ -1722,6 +1785,12 @@ def run_scheduler_pass(
                 log(f"[Error] Task `{task['name']}` depends on unknown task `{dep}`.")
                 had_error = True
 
+    # Register dependency-only tasks on context for event-driven triggering.
+    if ctx is not None:
+        ctx._dep_only_tasks = [t for t in validated_tasks if t.get("_dependency_only")]
+        ctx._all_validated_tasks = validated_tasks
+        ctx._dep_queued.clear()
+
     # Process commands from monitor (UDP queue + leftover trigger files).
     if ctx is not None:
         with state_lock:
@@ -1798,6 +1867,8 @@ def run_scheduler_pass(
         recovered_keys.add(key)
 
     for task in validated_tasks:
+        if task.get("_dependency_only"):
+            continue  # triggered by event, not by schedule
         if not should_run(task, now):
             continue
 
@@ -1888,6 +1959,8 @@ def run_scheduler_pass(
 
     # --- Retry pass: re-queue failed tasks whose retry_delay_seconds has elapsed ---
     for task in validated_tasks:
+        if task.get("_dependency_only"):
+            continue  # triggered by event, not by schedule
         key = task_key(task)
         if key in scheduled_keys:
             continue
@@ -2028,10 +2101,7 @@ def run_scheduler_pass(
         return result
 
     # --- Fire-and-forget mode (daemon with SchedulerContext) ---
-    if ctx is not None and tasks_to_execute:
-        for task_run in tasks_to_execute:
-            _key = task_run["key"]
-            ctx.actively_running.add(_key)
+    if ctx is not None:
 
         def _daemon_task_wrapper(task_run: dict[str, Any]) -> None:
             _key = task_run["key"]
@@ -2081,8 +2151,88 @@ def run_scheduler_pass(
             if not succeeded:
                 log(f"[Warn] {task_run['task_name']} finished with failure.")
 
-        for task_run in tasks_to_execute:
-            ctx._executor.submit(_daemon_task_wrapper, task_run)
+        # Callback: when a dep-only task's dependencies are all met, submit it.
+        def _dep_trigger_callback(task: dict[str, Any]) -> None:
+            _key = task_key(task)
+            script_path = (config_path.parent / task["path"]).resolve()
+            if not script_path.exists():
+                log(f"[Error] Dep-trigger: script not found for `{task['name']}`: {script_path}")
+                return
+            _worker_cost = resolve_dynamic_worker_cost(_key, profiling, max_workers, default_worker_cost)
+            trigger_slot = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
+            task_run = {
+                "key": _key,
+                "task_name": task["name"],
+                "script_path": script_path,
+                "worker_cost": _worker_cost,
+                "is_recovery": False,
+                "interpreter": _resolve_interpreter(task, script_path),
+                "timeout_minutes": task.get("_timeout_minutes"),
+                "_dep_slot_key": trigger_slot,
+            }
+            log(f"[DepTrigger] All dependencies met for `{task['name']}`, queuing immediately.")
+            ctx.actively_running.add(_key)
+            ctx._executor.submit(_daemon_dep_wrapper, task_run)
+
+        def _daemon_dep_wrapper(task_run: dict[str, Any]) -> None:
+            """Like _daemon_task_wrapper but uses its own slot_key."""
+            _key = task_run["key"]
+            _slot = task_run["_dep_slot_key"]
+            _timeout_min = task_run.get("timeout_minutes")
+            _timeout_sec = _timeout_min * 60 if _timeout_min is not None else None
+            try:
+                ctx.mark_task_started(
+                    key=_key,
+                    task_name=task_run["task_name"],
+                    script_path=task_run["script_path"],
+                    worker_cost=task_run["worker_cost"],
+                    slot_key_value=_slot,
+                    is_recovery=False,
+                )
+                if use_workers:
+                    raw_result = run_with_slots(
+                        task_name=task_run["task_name"],
+                        script_path=task_run["script_path"],
+                        worker_cost=task_run["worker_cost"],
+                        slot_limiter=ctx.slot_limiter,
+                        working_directory=config_path.parent,
+                        dry_run=dry_run,
+                        log_task_output=log_task_output,
+                        lib_pythonpath=lib_pythonpath,
+                        interpreter=task_run.get("interpreter"),
+                        profiled=True,
+                        timeout_seconds=_timeout_sec,
+                    )
+                else:
+                    raw_result = run_task_profiled(
+                        task_name=task_run["task_name"],
+                        script_path=task_run["script_path"],
+                        working_directory=config_path.parent,
+                        dry_run=dry_run,
+                        log_task_output=log_task_output,
+                        lib_pythonpath=lib_pythonpath,
+                        interpreter=task_run.get("interpreter"),
+                        timeout_seconds=_timeout_sec,
+                    )
+                succeeded = _handle_profiled_result(task_run, raw_result)
+            except Exception as exc:
+                log(f"[Error] {task_run['task_name']} crashed in dep-trigger executor: {exc}")
+                succeeded = False
+            ctx.mark_task_finished(_key, _slot, succeeded)
+            # Allow re-triggering in future cycles.
+            with ctx._dep_queued_lock:
+                ctx._dep_queued.discard(_key)
+            if not succeeded:
+                log(f"[Warn] {task_run['task_name']} (dep-triggered) finished with failure.")
+
+        ctx._dep_trigger_callback = _dep_trigger_callback
+
+        if tasks_to_execute:
+            for task_run in tasks_to_execute:
+                _key = task_run["key"]
+                ctx.actively_running.add(_key)
+            for task_run in tasks_to_execute:
+                ctx._executor.submit(_daemon_task_wrapper, task_run)
 
         return 0
 
@@ -2168,6 +2318,66 @@ def run_scheduler_pass(
                 mark_task_finished(key, slot_key, succeeded)
                 if not succeeded:
                     had_error = True
+
+    # --- Dependency-only pass for blocking mode ---
+    dep_only_tasks = [t for t in validated_tasks if t.get("_dependency_only")]
+    dep_triggered = True
+    dep_done: set[str] = set()
+    while dep_triggered:
+        dep_triggered = False
+        for task in dep_only_tasks:
+            key = task_key(task)
+            if key in dep_done or key in paused_tasks_set:
+                continue
+            deps = task.get("_depends_on", [])
+            all_ok = True
+            for dep_name in deps:
+                dep_k = next((task_key(t) for t in validated_tasks if t["name"] == dep_name), None)
+                if dep_k is None:
+                    all_ok = False
+                    break
+                entry = last_triggered_slot.get(dep_k)
+                if not (isinstance(entry, dict) and entry.get("outcome") == "success"):
+                    all_ok = False
+                    break
+            if not all_ok:
+                continue
+            dep_done.add(key)
+            dep_triggered = True
+            script_path = (config_path.parent / task["path"]).resolve()
+            if not script_path.exists():
+                log(f"[Error] Dep-trigger: script not found for `{task['name']}`: {script_path}")
+                had_error = True
+                continue
+            trigger_slot = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
+            log(f"[DepTrigger] All dependencies met for `{task['name']}`, running immediately.")
+            mark_task_started(
+                key=key,
+                task_name=task["name"],
+                script_path=script_path,
+                worker_cost=resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost),
+                slot_key_value=trigger_slot,
+                is_recovery=False,
+            )
+            _timeout_min = task.get("_timeout_minutes")
+            _timeout_sec = _timeout_min * 60 if _timeout_min is not None else None
+            result = run_task_profiled(
+                task_name=task["name"],
+                script_path=script_path,
+                working_directory=config_path.parent,
+                dry_run=dry_run,
+                log_task_output=log_task_output,
+                lib_pythonpath=lib_pythonpath,
+                interpreter=_resolve_interpreter(task, script_path),
+                timeout_seconds=_timeout_sec,
+            )
+            succeeded = _handle_profiled_result(
+                {"key": key, "task_name": task["name"], "script_path": script_path,
+                 "worker_cost": 1, "is_recovery": False}, result
+            )
+            mark_task_finished(key, trigger_slot, succeeded)
+            if not succeeded:
+                had_error = True
 
     save_state(state_path, state)
 
