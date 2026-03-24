@@ -9,7 +9,7 @@ settings:
   log_task_output: true            # true = capture and log script, false = discard
   log_keep_count: 14               # keep this many daily log files, delete oldest beyond this
   
-  git_pull_interval_minutes: 10    # 0 = disabled. Smart pull: only pulls when remote has new commits.
+  git_pull_interval_minutes: 60    # 0 = disabled. Smart pull: only pulls when remote has new commits.
   # Push is event-driven: pushes automatically after each task completes. Also supports on-demand push via monitor (u key).
   
   email:

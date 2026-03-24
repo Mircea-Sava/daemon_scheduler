@@ -101,3 +101,7 @@ tasks:
 #    path: "emails/error_email.py"
 #    times: "5:00, 12:00, 17:00, 0:00"
 
+#  - id: "Daily Report"
+#    path: "emails/daily_report_email.py"
+#    times: "7:00, 12:00, 17:00"
+
