@@ -227,7 +227,7 @@ def test_day_of_week_to_index_none_returns_zero():
 # ---------------------------------------------------------------------------
 
 def test_day_of_week_to_indices_comma_separated():
-    assert day_of_week_to_indices("0,1,4") == {0, 1, 4}
+    assert day_of_week_to_indices("mon,tue,fri") == {0, 1, 4}
 
 
 def test_day_of_week_to_indices_list_input():

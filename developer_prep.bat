@@ -56,12 +56,13 @@ for /f "usebackq" %%V in (`python %HELPER% all-versions`) do (
     "%UV%" python install %%V --install-dir .\bin\python
 )
 
-:: Vendor wheels for root project
+:: Vendor wheels for root project (download missing, clean stale)
 if not exist "vendor" mkdir vendor
 echo.
 echo Vendoring wheels for root project ^(Python %PYVER%^)...
 "%UV%" pip compile pyproject.toml -o _requirements.txt
 pip download -d .\vendor --only-binary=:all: --python-version %PYVER% --platform win_amd64 -r _requirements.txt
+python %HELPER% clean-vendor vendor _requirements.txt
 del _requirements.txt
 
 :: Vendor wheels for each subproject
@@ -73,6 +74,7 @@ for /f "usebackq" %%D in (`python %HELPER% subprojects`) do (
     if not exist "%%D\vendor" mkdir "%%D\vendor"
     "%UV%" pip compile "%%D\pyproject.toml" -o _requirements.txt
     pip download -d "%%D\vendor" --only-binary=:all: --python-version !SUBVER! --platform win_amd64 -r _requirements.txt
+    python %HELPER% clean-vendor "%%D\vendor" _requirements.txt
     del _requirements.txt
 )
 
