@@ -25,7 +25,7 @@ This project was built around a specific set of constraints:
 - **Smart git sync.** Only pulls when there are actual changes, pushes results immediately after each task.
 - **Parallel execution.** Runs multiple tasks at the same time, automatically balances CPU and memory usage.
 - **Auto-retry.** If a task fails, it retries automatically with increasing wait times (1 min, 2 min, 4 min, ..., up to 30 min).
-- **Task dependencies.** Make one task wait for another to finish before it runs.
+- **Task dependencies.** Make one task wait for another to finish before it runs. Tasks with `depends_on` but no schedule run automatically right after their dependencies succeed.
 - **Task timeout.** Automatically kills scripts that run too long.
 - **Multiple run times.** Schedule a task at specific times like `"9:00, 14:00, 17:30"` in one entry.
 - **Pause/resume.** Pause and resume individual tasks from the dashboard without editing config.
@@ -34,6 +34,7 @@ This project was built around a specific set of constraints:
 - **Live dashboard.** Real-time terminal view showing task status, resource usage, schedule, and git sync state.
 - **Email alerts.** Optional notifications when tasks fail or to confirm the scheduler is still alive.
 - **Schedule checker.** Double-click `check_schedule.bat` to verify when a task will run before you push.
+- **Manual runner.** Double-click `run_manual.bat` to pick and run scripts manually if the scheduler is down.
 
 ## Quick Start
 
@@ -75,6 +76,8 @@ repo/
   run_monitor.bat         # Starts the dashboard
   check_schedule.bat      # Check when a task will run
   check_schedule.py       # Schedule checker script
+  run_manual.bat          # Run scripts manually (fallback)
+  tests/                  # Test suite (294 tests)
   bin/
     uv.exe                # Bundled package manager
     python/               # Bundled Python interpreters

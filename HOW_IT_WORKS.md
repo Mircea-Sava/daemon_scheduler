@@ -20,6 +20,8 @@ repo/
   run_monitor.bat       # Starts the dashboard
   check_schedule.bat    # Preview when a task will run
   check_schedule.py     # Schedule checker (used by check_schedule.bat)
+  run_manual.bat        # Run scripts manually (fallback if scheduler is down)
+  tests/                # Test suite (294 tests)
   bin/
     uv.exe              # Bundled package manager (no pip needed)
     python/             # Bundled Python interpreters (portable)
@@ -416,7 +418,47 @@ Developers can check task results by:
 
 ## How do task dependencies work?
 
-Use `depends_on` in `schedule.yaml` to make a task wait for another task to finish successfully before it runs:
+Use `depends_on` in `schedule.yaml` to make a task wait for another task to finish successfully before it runs. There are two modes:
+
+### Mode 1: Dependency-only (no schedule)
+
+If a task has `depends_on` but **no schedule fields** (`start_hour`, `frequency_min`, `times`, etc.), it becomes a **dependency-only** task. It has no schedule of its own and runs automatically right after all its dependencies succeed, with zero delay and no polling.
+
+```yaml
+tasks:
+  - id: "fetch-data"
+    path: "scripts/fetch.py"
+    start_hour: 9
+
+  - id: "process-data"
+    path: "scripts/process.py"
+    depends_on: "fetch-data"
+```
+
+In this example, `process-data` has no `start_hour` or `frequency_min`, so it is purely event-driven. When `fetch-data` finishes successfully, the scheduler immediately triggers `process-data`. If `fetch-data` fails, `process-data` never runs.
+
+This works with chains too. If A triggers B and B triggers C, the entire chain fires automatically:
+
+```yaml
+tasks:
+  - id: "A"
+    path: "scripts/a.py"
+    start_hour: 9
+
+  - id: "B"
+    path: "scripts/b.py"
+    depends_on: "A"
+
+  - id: "C"
+    path: "scripts/c.py"
+    depends_on: "B"
+```
+
+A task can also depend on multiple parents: `depends_on: "A, B"`. It only triggers when **all** listed dependencies have succeeded.
+
+### Mode 2: Scheduled with dependencies
+
+If a task has `depends_on` **and** schedule fields, it runs on its own schedule but only when the dependencies have succeeded in the same time slot:
 
 ```yaml
 tasks:
@@ -431,11 +473,13 @@ tasks:
     depends_on: "fetch-data"
 ```
 
-In this example, `process-data` is scheduled at 9:15, but it will only run if `fetch-data` has already succeeded in the same time slot. If `fetch-data` failed or hasn't run yet, `process-data` is skipped. On the next tick (one minute later), the scheduler checks again. If `fetch-data` has since succeeded (via retry), `process-data` will run.
+Here `process-data` is scheduled at 9:15 but only runs if `fetch-data` has already succeeded. If it hasn't, the scheduler checks again on the next tick.
 
-You can depend on multiple tasks by separating them with commas: `depends_on: "task-A, task-B"`. All listed tasks must succeed before the dependent task runs.
+### General rules
 
-A **time slot** is the minute when a task is scheduled to run. For example, a task with `start_hour: 9` and `frequency_min: 30` has time slots at 9:00, 9:30, 10:00, etc. The scheduler checks dependencies within the same slot. A task at 9:30 checks if its dependencies succeeded since 9:30 (not from an earlier slot like 9:00).
+- You can depend on multiple tasks: `depends_on: "task-A, task-B"`. All must succeed.
+- A **time slot** is the minute when a task is scheduled. The scheduler checks dependencies within the same slot.
+- If a dependency references a task ID that doesn't exist in `schedule.yaml`, the scheduler logs an error.
 
 ## How do task timeouts work?
 
@@ -479,6 +523,12 @@ Notes:
 - If the task is currently paused, the run-now request is ignored. Unpause it first.
 - If the task is already running or already queued for this tick, the request is ignored (no duplicate runs).
 - The task runs with all the same behavior as a scheduled run: profiling, timeout, logging, etc.
+
+## What if the scheduler is down?
+
+Double-click `run_manual.bat`. It reads `schedule.yaml`, shows a numbered menu of all tasks, and lets you pick which ones to run sequentially. It respects `depends_on` ordering: dependencies run first, and if a dependency fails, its dependents are skipped.
+
+This is a standalone fallback that doesn't use the sequencer at all. It parses the YAML with regex (no PyYAML needed), so it works even if the `.venv` is broken. It uses the same interpreter resolution as the sequencer (subproject `.venv` > root `.venv` > system Python).
 
 ## Can I run non-Python scripts?
 
