@@ -302,26 +302,6 @@ def _format_countdown(last_time_str: str | None, interval_minutes: int) -> str:
         return ""
 
 
-def _next_heartbeat_str(settings: dict) -> str:
-    """Return the next scheduled heartbeat hour like 'Next: 17:00'."""
-    import datetime as dt
-    hb_cfg = settings.get("heartbeat_email", {})
-    if not hb_cfg.get("enabled", False):
-        return "disabled"
-    hours_raw = hb_cfg.get("hours")
-    if hours_raw is not None:
-        allowed = sorted({int(h.strip()) for h in str(hours_raw).split(",") if h.strip()})
-    else:
-        allowed = list(range(24))
-    if not allowed:
-        return "no hours configured"
-    now_hour = dt.datetime.now().hour
-    # Find next hour strictly after current
-    future = [h for h in allowed if h > now_hour]
-    next_h = future[0] if future else allowed[0]
-    return f"{next_h:02d}:00"
-
-
 def build_git_panel(settings: dict, state: dict) -> Panel:
     pull_interval = settings.get("git_pull_interval_minutes", 0)
 
@@ -340,10 +320,7 @@ def build_git_panel(settings: dict, state: dict) -> Panel:
     push_status = f"last: {last_push}" if last_push else "awaiting first push"
     lines.append(f"Push: after task completion  —  {push_status}")
 
-    hb_next = _next_heartbeat_str(settings)
-    lines.append(f"Heartbeat email: next at {hb_next}" if hb_next not in ("disabled", "no hours configured") else f"Heartbeat email: {hb_next}")
-
-    return Panel("\n".join(lines), title="Git Sync & Heartbeat", border_style="blue")
+    return Panel("\n".join(lines), title="Git Sync", border_style="blue")
 
 
 

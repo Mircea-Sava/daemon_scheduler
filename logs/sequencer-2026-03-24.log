@@ -1,0 +1,77 @@
+[2026-03-24 20:16:21.814] [Pause] Task `task-1` paused.
+[2026-03-24 20:16:21.814] [Resume] Task `task-1` resumed.
+[2026-03-24 20:16:21.830] [Run Now] Task `task-1` queued for immediate run.
+[2026-03-24 20:16:21.830] [Pause] Task `a` paused.
+[2026-03-24 20:16:21.830] [Pause] Task `b` paused.
+[2026-03-24 20:16:21.830] [Pause] Task `c` paused.
+[2026-03-24 20:16:21.845] [Pause] Task `new` paused.
+[2026-03-24 20:16:21.845] [Resume] Task `old` resumed.
+[2026-03-24 20:16:21.845] [Run Now] Task `immediate` queued for immediate run.
+[2026-03-24 20:16:21.905] [Pause] Task `foo` paused via trigger.
+[2026-03-24 20:16:21.905] [Resume] Task `foo` resumed via trigger.
+[2026-03-24 20:16:21.920] [Run Now] Task `foo` queued for immediate run via trigger.
+[2026-03-24 20:16:21.936] [Pause] Task `a` paused via trigger.
+[2026-03-24 20:16:21.936] [Run Now] Task `c` queued for immediate run via trigger.
+[2026-03-24 20:16:21.936] [Resume] Task `b` resumed via trigger.
+[2026-03-24 20:16:22.795] [Warn] State file C:\Users\Mircea Ioan\AppData\Local\Temp\pytest-of-Mircea Ioan\pytest-0\test_load_state_corrupt_json0\state.json is unreadable. Resetting it.
+[2026-03-24 20:16:51.224] [Pause] Task `task-1` paused.
+[2026-03-24 20:16:51.229] [Resume] Task `task-1` resumed.
+[2026-03-24 20:16:51.229] [Run Now] Task `task-1` queued for immediate run.
+[2026-03-24 20:16:51.237] [Pause] Task `a` paused.
+[2026-03-24 20:16:51.237] [Pause] Task `b` paused.
+[2026-03-24 20:16:51.237] [Pause] Task `c` paused.
+[2026-03-24 20:16:51.241] [Pause] Task `new` paused.
+[2026-03-24 20:16:51.241] [Resume] Task `old` resumed.
+[2026-03-24 20:16:51.241] [Run Now] Task `immediate` queued for immediate run.
+[2026-03-24 20:16:51.260] [Pause] Task `foo` paused via trigger.
+[2026-03-24 20:16:51.263] [Resume] Task `foo` resumed via trigger.
+[2026-03-24 20:16:51.273] [Run Now] Task `foo` queued for immediate run via trigger.
+[2026-03-24 20:16:51.281] [Pause] Task `a` paused via trigger.
+[2026-03-24 20:16:51.281] [Run Now] Task `c` queued for immediate run via trigger.
+[2026-03-24 20:16:51.289] [Resume] Task `b` resumed via trigger.
+[2026-03-24 20:16:51.781] [Warn] State file C:\Users\Mircea Ioan\AppData\Local\Temp\pytest-of-Mircea Ioan\pytest-1\test_load_state_corrupt_json0\state.json is unreadable. Resetting it.
+[2026-03-24 20:20:02.491] [Pause] Task `task-1` paused.
+[2026-03-24 20:20:02.503] [Resume] Task `task-1` resumed.
+[2026-03-24 20:20:02.503] [Run Now] Task `task-1` queued for immediate run.
+[2026-03-24 20:20:02.508] [Pause] Task `a` paused.
+[2026-03-24 20:20:02.508] [Pause] Task `b` paused.
+[2026-03-24 20:20:02.508] [Pause] Task `c` paused.
+[2026-03-24 20:20:02.516] [Pause] Task `new` paused.
+[2026-03-24 20:20:02.520] [Resume] Task `old` resumed.
+[2026-03-24 20:20:02.520] [Run Now] Task `immediate` queued for immediate run.
+[2026-03-24 20:20:02.524] [Pause] Task `foo` paused via trigger.
+[2026-03-24 20:20:02.532] [Resume] Task `foo` resumed via trigger.
+[2026-03-24 20:20:02.540] [Run Now] Task `foo` queued for immediate run via trigger.
+[2026-03-24 20:20:02.556] [Pause] Task `a` paused via trigger.
+[2026-03-24 20:20:02.556] [Run Now] Task `c` queued for immediate run via trigger.
+[2026-03-24 20:20:02.556] [Resume] Task `b` resumed via trigger.
+[2026-03-24 20:20:25.442] [Pause] Task `task-1` paused.
+[2026-03-24 20:20:25.452] [Resume] Task `task-1` resumed.
+[2026-03-24 20:20:25.452] [Run Now] Task `task-1` queued for immediate run.
+[2026-03-24 20:20:25.461] [Pause] Task `a` paused.
+[2026-03-24 20:20:25.461] [Pause] Task `b` paused.
+[2026-03-24 20:20:25.461] [Pause] Task `c` paused.
+[2026-03-24 20:20:25.469] [Pause] Task `new` paused.
+[2026-03-24 20:20:25.475] [Resume] Task `old` resumed.
+[2026-03-24 20:20:25.475] [Run Now] Task `immediate` queued for immediate run.
+[2026-03-24 20:20:25.486] [Pause] Task `foo` paused via trigger.
+[2026-03-24 20:20:25.492] [Resume] Task `foo` resumed via trigger.
+[2026-03-24 20:20:25.492] [Run Now] Task `foo` queued for immediate run via trigger.
+[2026-03-24 20:20:25.508] [Pause] Task `a` paused via trigger.
+[2026-03-24 20:20:25.508] [Run Now] Task `c` queued for immediate run via trigger.
+[2026-03-24 20:20:25.508] [Resume] Task `b` resumed via trigger.
+[2026-03-24 20:44:24.829] [Pause] Task `task-1` paused.
+[2026-03-24 20:44:24.837] [Resume] Task `task-1` resumed.
+[2026-03-24 20:44:24.837] [Run Now] Task `task-1` queued for immediate run.
+[2026-03-24 20:44:24.842] [Pause] Task `a` paused.
+[2026-03-24 20:44:24.842] [Pause] Task `b` paused.
+[2026-03-24 20:44:24.842] [Pause] Task `c` paused.
+[2026-03-24 20:44:24.852] [Pause] Task `new` paused.
+[2026-03-24 20:44:24.853] [Resume] Task `old` resumed.
+[2026-03-24 20:44:24.854] [Run Now] Task `immediate` queued for immediate run.
+[2026-03-24 20:44:24.854] [Pause] Task `foo` paused via trigger.
+[2026-03-24 20:44:24.865] [Resume] Task `foo` resumed via trigger.
+[2026-03-24 20:44:24.873] [Run Now] Task `foo` queued for immediate run via trigger.
+[2026-03-24 20:44:24.881] [Pause] Task `a` paused via trigger.
+[2026-03-24 20:44:24.881] [Run Now] Task `c` queued for immediate run via trigger.
+[2026-03-24 20:44:24.889] [Resume] Task `b` resumed via trigger.

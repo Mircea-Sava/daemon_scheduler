@@ -10,8 +10,10 @@
 #                If blank, runs only once at start_hour:start_minute.
 # end_hour:      optional, 0-23. If omitted, repeats non-stop.
 # end_minute:    optional, 0-59. Default: 0.
-# depends_on:    optional. List of task IDs that must succeed first in the
-#                same slot before this task runs. e.g. depends_on: "task-A"
+# depends_on:    optional. Task IDs that must succeed before this task runs.
+#                If the task has NO schedule fields (no start_hour, frequency_min,
+#                times, etc.), it becomes "dependency-only" and runs automatically
+#                right after all its dependencies finish.
 # times:          optional. Comma-separated "HH:MM" values for multiple specific
 #                 run times in one entry. Cannot be combined with start_hour/frequency_min.
 # timeout_minutes: optional. Kill the script if it runs longer than N minutes.
@@ -76,12 +78,10 @@
 #    times: "9:00, 14:00, 17:30"
 #    week_day: 1,2,3,4,5
 #
-#  Run daily at 9:30, only after "task-A" succeeds, kill after 10 min:
+#  Run daily at 9:30, only after "task-A" and "task-B" succeeds in the same slot:
 #  - id: "test"
 #    path: "scripts/test.py"
-#    start_hour: 9
-#    start_minute: 30
-#    depends_on: "task-A"
+#    depends_on: "task-A, task-B"
 #    timeout_minutes: 10
 
 tasks:
@@ -92,10 +92,6 @@ tasks:
   - id: "Test Script 2"
     path: "test2_project/test2.py"
     frequency_min: 1
-
-#  - id: "Heartbeat Email"
-#    path: "emails/heartbeat_email.py"
-#    times: "5:00, 12:00, 17:00, 0:00"
 
 #  - id: "Error Email"
 #    path: "emails/error_email.py"
