@@ -1,0 +1,51 @@
+fix C:\Users\E40114686\Documents\github_seq\daemon_scheduler\databricks_app. My env is C:\Users\E40114686\Documents\github_seq\daemon_scheduler\.env and my app is PNG or JPEG, max 250KB, recommended 640 x 360 px
+App status
+Compute is starting
+Please wait for compute to become ready before deploying the app. This process takes 2-3 minutes.
+Source
+No source code
+App resources
+Key
+Type
+Details
+Permissions
+No resources specified
+Edit in your IDE
+Prerequisites: Set up your Python environment and the Databricks CLI.
+Sync the files
+Move to the folder with your source code
+cd my-app-source
+Sync source files into Databricks
+databricks sync --watch . /Workspace/Users/e40114686@pwc.ca/test
+Write app.yaml and requirements.txt
+Create a file called app.yaml that describes the command line to run for startup, and the environment variables to set.
+Create a file called requirements.txt that lists which packages to pip install.
+Deploy to Databricks Apps
+databricks apps deploy test --source-code-path /Workspace/Users/e40114686@pwc.ca/test
+You can leave out the full path for subsequent deploys.
+Open your app in the browser. If it doesn't work, check out the logs. Common problems and solutions:
+Problem
+Solution
+Missing package or wrong package version
+Add to requirements.txt
+Permissions issue
+Give access app-4ft980 test to the resource
+Missing environment variable
+Add to the env section of app.yaml
+Running the wrong command line at startup
+Add to the command section of app.yaml
+About this app
+Creator
+e40114686@pwc.ca
+Created on
+1 minute ago
+Last update
+1 minute ago
+App ID
+1417a240-0cb3-4e68-b984-dce7fe093c6a
+Description
+test
+Compute
+Medium (Up to 2 vCPUs, 6 GB memory, 0.5 DBU/hour)
+Tags
+I want it to display the monitor to the app in real time. Should we also switch sequencer_state.json to have a table inside team_aftermarket_mro.mro_all ?
