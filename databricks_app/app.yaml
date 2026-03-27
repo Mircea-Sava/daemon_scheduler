@@ -9,3 +9,5 @@ command:
 env:
   - name: FLASK_ENV
     value: production
+  - name: STATE_VOLUME_BASE
+    value: "/Volumes/team_aftermarket_mro/mro_all/scheduler"
