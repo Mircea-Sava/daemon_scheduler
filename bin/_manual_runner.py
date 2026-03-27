@@ -267,6 +267,29 @@ def main():
     print(f"  {passed} passed, {failed} failed out of {len(results)} total.")
     print()
 
+    # Push state to git so the sequencer picks it up
+    print("  Pushing state to git...")
+    try:
+        subprocess.run(
+            ["git", "add", "sequencer_state.json"],
+            cwd=str(ROOT), capture_output=True, timeout=30,
+        )
+        subprocess.run(
+            ["git", "commit", "-m", "manual run: state update"],
+            cwd=str(ROOT), capture_output=True, timeout=30,
+        )
+        result = subprocess.run(
+            ["git", "push"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=120,
+        )
+        if result.returncode == 0:
+            print("  [OK] State pushed to git.")
+        else:
+            print(f"  [WARN] Git push failed: {(result.stderr or '').strip()}")
+    except Exception as exc:
+        print(f"  [WARN] Git push failed: {exc}")
+    print()
+
 
 if __name__ == "__main__":
     main()
