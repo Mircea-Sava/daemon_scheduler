@@ -36,6 +36,12 @@ This project was built around a specific set of constraints:
 - **Schedule checker.** Double-click `check_schedule.bat` to verify when a task will run before you push.
 - **Manual runner.** Double-click `run_manual.bat` to pick and run scripts manually if the scheduler is down.
 
+![Live dashboard](images/monitor.png)
+*Live dashboard showing task status, CPU/RAM profiling, today's schedule, and git sync state.*
+
+![Sequencer running](images/sequencer.png)
+*The sequencer daemon — timestamped task execution with git sync and per-task output.*
+
 ## Quick Start
 
 ### For Developers (write and push scripts)

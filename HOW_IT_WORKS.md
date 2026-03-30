@@ -110,7 +110,12 @@ Developers write Python scripts, configure when they run, and push to the remote
    | `0 6 1 * *` | 6:00 AM on 1st of month | `start_hour: 6, month_day: 1` |
    | `59 23 31 12 *` | Dec 31 at 23:59 | `start_hour: 23, start_minute: 59, month: 12, month_day: 31` |
 
-5. **Push to the remote repo**:
+5. **Before pushing, verify your schedule.** Double-click `check_schedule.bat` to confirm exactly when your task will run:
+
+   ![Schedule checker](images/check_schedule.png)
+   *Enter a task number or `a` for all tasks — shows the next scheduled run time for each.*
+
+6. **Push to the remote repo**:
    ```
    git add .
    git commit -m "add daily report script"
@@ -152,6 +157,9 @@ The scheduler laptop runs the sequencer 24/7. It does not need Python or any lib
    - Installs all dependencies from `vendor/*.whl` files (fully offline, no internet needed)
    - Does the same for every subproject that has its own `pyproject.toml`
    - Starts the daemon loop
+
+![Automatic virtual environment setup](images/automatic_venv.png)
+*The sequencer automatically creates the virtual environment and installs all packages on first launch — no manual setup needed.*
 
 ### What Happens When the Scheduler Runs
 
@@ -223,6 +231,9 @@ The sequencer runs in **daemon mode** (`sequencer.py --daemon`). A daemon is a p
     - Zero CPU while waiting (OS-level blocking)
 ```
 
+![Sequencer running tasks](images/sequencer.png)
+*The sequencer daemon in action — timestamped task execution with git sync, retries, and per-task output.*
+
 ### Event-Driven Sleep (Zero CPU While Idle)
 
 The scheduler is designed to use zero CPU when no tasks are running. Here is how each component achieves this:
@@ -282,6 +293,11 @@ Optionally, open a second terminal and run `run_monitor.bat` to see a live dashb
   - `r` to run the selected task immediately
   - `p` to force a git pull, `u` to force a push
   - `q` to quit
+
+If the scheduler is down, `run_manual.bat` lets you pick and run scripts directly without the daemon:
+
+![Manual script runner](images/run_manual.png)
+*Manual runner — select tasks by number or run all sequentially.*
 
 ### Running on Any Laptop
 
