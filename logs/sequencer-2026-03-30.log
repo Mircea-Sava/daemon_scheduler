@@ -16,3 +16,31 @@
 [2026-03-30 07:59:57.530] [Success] Test Script 1 completed. peak_ram=0.0% avg_cpu=0.0%
 [2026-03-30 07:59:57.530] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
 [2026-03-30 07:59:57.530] Executing (profiled): Test Script 2 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\test2_project\.venv\Scripts\python.exe)
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-03-30 07:59:58.305858 | Success |
++--------------------------------------+
+[2026-03-30 07:59:58.377] [Success] Test Script 2 completed. peak_ram=0.2% avg_cpu=0.0%
+[2026-03-30 07:59:58.377] [Profile] Test Script 2: peak_ram=0.2% avg_cpu=0.0% -> learned_cost=1
+[2026-03-30 08:00:00.024] Parallel mode enabled (use_workers=1). max_workers=80
+[2026-03-30 08:00:00.026] Heartbeat: 2026-03-30 08:00
+[2026-03-30 08:00:00.034] [Profile] Test Script 1 using dynamic cost=1
+[2026-03-30 08:00:00.035] [Profile] Test Script 2 using dynamic cost=1
+[2026-03-30 08:00:00.039] Executing 2 task(s) with slot capacity=80 and thread_workers=2.
+[2026-03-30 08:00:00.044] [Sleep] Next wake in 60s
+[2026-03-30 08:00:00.044] Executing (profiled): Test Script 1 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\.venv\Scripts\python.exe)
+[2026-03-30 08:00:00.044] Executing (profiled): Test Script 2 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\test2_project\.venv\Scripts\python.exe)
+[2026-03-30 08:00:00.336862] Test Script 1 finished!
+[2026-03-30 08:00:00.374] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-03-30 08:00:00.374] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-03-30 08:00:00.579] [Git Push] (on-demand) pushed
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-03-30 08:00:00.653094 | Success |
++--------------------------------------+
+[2026-03-30 08:00:00.700] [Success] Test Script 2 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-03-30 08:00:00.706] [Profile] Test Script 2: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
