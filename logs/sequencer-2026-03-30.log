@@ -15,3 +15,32 @@
 [2026-03-30 07:46:59.454533] Test Script 1 finished!
 [2026-03-30 07:46:59.472] [Success] Test Script 1 completed.
 [2026-03-30 07:46:59.472] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-03-30 07:47:00.229] [Warn] psutil is not installed. Parallel mode requires psutil for auto-profiling.
+[2026-03-30 07:47:00.234] Heartbeat: 2026-03-30 07:47
+[2026-03-30 07:47:00.234] [Skip] `Test Script 2` still running from a previous tick.
+[2026-03-30 07:47:00.238] [Profile] Test Script 1 using dynamic cost=1
+[2026-03-30 07:47:00.239] [Skip] Test Script 2 already triggered in slot 2026-03-30 07:47.
+[2026-03-30 07:47:00.240] [Sleep] Next wake in 60s
+[2026-03-30 07:47:00.240] Executing: Test Script 1 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\.venv\Scripts\python.exe)
+[2026-03-30 07:47:00.509066] Test Script 1 finished!
+[2026-03-30 07:47:00.532] [Success] Test Script 1 completed.
+[2026-03-30 07:47:00.534] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-03-30 07:47:00.615299 | Success |
++--------------------------------------+
+[2026-03-30 07:47:00.653] [Success] Test Script 2 completed.
+[2026-03-30 07:47:00.653] [Profile] Test Script 2: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-03-30 07:47:02.189] [Git Push] (on-demand) pushed
+[2026-03-30 07:48:00.026] [Warn] psutil is not installed. Parallel mode requires psutil for auto-profiling.
+[2026-03-30 07:48:00.026] Heartbeat: 2026-03-30 07:48
+[2026-03-30 07:48:00.031] [Profile] Test Script 1 using dynamic cost=1
+[2026-03-30 07:48:00.031] [Profile] Test Script 2 using dynamic cost=1
+[2026-03-30 07:48:00.031] [Sleep] Next wake in 60s
+[2026-03-30 07:48:00.042] Executing: Test Script 1 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\.venv\Scripts\python.exe)
+[2026-03-30 07:48:00.042] Executing: Test Script 2 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\test2_project\.venv\Scripts\python.exe)
+[2026-03-30 07:48:00.325948] Test Script 1 finished!
+[2026-03-30 07:48:00.343] [Success] Test Script 1 completed.
+[2026-03-30 07:48:00.343] [Profile] Test Script 1: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
