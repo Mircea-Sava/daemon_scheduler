@@ -1,5 +1,7 @@
 """Interactive manual runner — lets users pick tasks from schedule.yaml and run them sequentially."""
 
+import datetime as dt
+import json
 import re
 import sys
 import subprocess
@@ -7,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEDULE = ROOT / "schedule.yaml"
+STATE_FILE = ROOT / "sequencer_state.json"
 
 
 def _find_python(script_path: Path) -> str:
@@ -91,6 +94,33 @@ def _topo_sort(tasks: list[dict]) -> list[dict]:
     for t in tasks:
         visit(t["id"])
     return order
+
+
+def _load_state() -> dict:
+    if STATE_FILE.exists():
+        try:
+            text = STATE_FILE.read_text(encoding="utf-8").strip()
+            return json.loads(text) if text else {}
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
+
+
+def _save_state(state: dict) -> None:
+    STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+
+
+def _update_state(task_id: str, ok: bool) -> None:
+    """Record task outcome in sequencer_state.json."""
+    state = _load_state()
+    slots = state.setdefault("last_triggered_slot", {})
+    slots[task_id] = {
+        "slot": "manual",
+        "last_run": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "outcome": "success" if ok else "failure",
+        "retry_count": 0,
+    }
+    _save_state(state)
 
 
 def run_script(task_id: str, script_path: Path) -> bool:
@@ -214,9 +244,11 @@ def main():
         if blocked_by:
             print(f"\n  [SKIP] {t['id']} — dependency failed: {', '.join(blocked_by)}")
             results.append((t["id"], False))
+            _update_state(t["id"], False)
             continue
         ok = run_script(t["id"], script)
         results.append((t["id"], ok))
+        _update_state(t["id"], ok)
         if ok:
             succeeded.add(t["id"])
 
@@ -233,6 +265,33 @@ def main():
     passed = sum(1 for _, ok in results if ok)
     failed = len(results) - passed
     print(f"  {passed} passed, {failed} failed out of {len(results)} total.")
+    print()
+
+    # Sync state to git so the sequencer picks it up
+    print("  Syncing state to git...")
+    try:
+        subprocess.run(
+            ["git", "add", "sequencer_state.json"],
+            cwd=str(ROOT), capture_output=True, timeout=30,
+        )
+        subprocess.run(
+            ["git", "commit", "-m", "manual run: state update"],
+            cwd=str(ROOT), capture_output=True, timeout=30,
+        )
+        subprocess.run(
+            ["git", "pull", "--rebase"],
+            cwd=str(ROOT), capture_output=True, timeout=120,
+        )
+        result = subprocess.run(
+            ["git", "push"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=120,
+        )
+        if result.returncode == 0:
+            print("  [OK] State synced to git.")
+        else:
+            print(f"  [WARN] Git push failed: {(result.stderr or '').strip()}")
+    except Exception as exc:
+        print(f"  [WARN] Git sync failed: {exc}")
     print()
 
 
