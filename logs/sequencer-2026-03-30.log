@@ -70,3 +70,41 @@
 [2026-03-30 07:51:12.520085] Test Script 1 finished!
 [2026-03-30 07:51:12.556] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
 [2026-03-30 07:51:12.558] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+             Test Script 2              
++--------------------------------------+
+| Timestamp                  | Status  |
+|----------------------------+---------|
+| 2026-03-30 07:51:12.869706 | Success |
++--------------------------------------+
+[2026-03-30 07:51:12.945] [Success] Test Script 2 completed. peak_ram=0.0% avg_cpu=0.0%
+[2026-03-30 07:51:12.945] [Profile] Test Script 2: peak_ram=0.0% avg_cpu=0.0% -> learned_cost=1
+[2026-03-30 07:51:15.163] [Git Push] (on-demand) pushed
+[2026-03-30 07:51:21.285] [Bootstrap] Using venv interpreter: C:\Users\E40114686\Documents\github_seq\daemon_scheduler\.venv\Scripts\python.exe
+[2026-03-30 07:51:21.443] [Bootstrap] Subproject test2_project: C:\Users\E40114686\Documents\github_seq\daemon_scheduler\test2_project\.venv\Scripts\python.exe
+[2026-03-30 07:51:21.443] [Daemon] SchedulerContext initialized (max_workers=80).
+[2026-03-30 07:51:21.452] Starting daemon mode (event-driven sleep).
+[2026-03-30 07:51:21.452] [Background] Git sync thread started (pull every 60 min, push on task completion).
+[2026-03-30 07:51:21.452] [Background] UDP wake listener on 127.0.0.1:19876.
+[2026-03-30 07:51:21.475] Parallel mode enabled (use_workers=1). max_workers=80
+[2026-03-30 07:51:21.475] Heartbeat: 2026-03-30 07:51
+[2026-03-30 07:51:21.480] [Skip] Test Script 1 already triggered in slot 2026-03-30 07:51.
+[2026-03-30 07:51:21.481] [Skip] Test Script 2 already triggered in slot 2026-03-30 07:51.
+[2026-03-30 07:51:21.481] [Sleep] Next wake in 39s
+[2026-03-30 07:51:36.447] [Bootstrap] Using venv interpreter: C:\Users\E40114686\Documents\github_seq\daemon_scheduler\.venv\Scripts\python.exe
+[2026-03-30 07:51:36.588] [Bootstrap] Subproject test2_project: C:\Users\E40114686\Documents\github_seq\daemon_scheduler\test2_project\.venv\Scripts\python.exe
+[2026-03-30 07:51:36.590] [Warn] State file C:\Users\E40114686\Documents\github_seq\daemon_scheduler\sequencer_state.json is unreadable. Resetting it.
+[2026-03-30 07:51:36.590] [Daemon] SchedulerContext initialized (max_workers=80).
+[2026-03-30 07:51:36.590] Starting daemon mode (event-driven sleep).
+[2026-03-30 07:51:36.590] [Background] Git sync thread started (pull every 60 min, push on task completion).
+[2026-03-30 07:51:36.599] [Background] UDP wake listener on 127.0.0.1:19876.
+[2026-03-30 07:51:36.631] Parallel mode enabled (use_workers=1). max_workers=80
+[2026-03-30 07:51:36.631] Heartbeat: 2026-03-30 07:51
+[2026-03-30 07:51:36.635] [Profile] Test Script 1 using dynamic cost=80
+[2026-03-30 07:51:36.637] [Profile] Test Script 2 using dynamic cost=80
+[2026-03-30 07:51:36.638] Executing 2 task(s) with slot capacity=80 and thread_workers=2.
+[2026-03-30 07:51:36.642] Executing (profiled): Test Script 1 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\.venv\Scripts\python.exe)
+[2026-03-30 07:51:36.644] [Sleep] Next wake in 23s
+[2026-03-30 07:51:36.940904] Test Script 1 finished!
+[2026-03-30 07:51:36.978] [Success] Test Script 1 completed. peak_ram=0.1% avg_cpu=0.0%
+[2026-03-30 07:51:36.979] [Profile] Test Script 1: peak_ram=0.1% avg_cpu=0.0% -> learned_cost=1
+[2026-03-30 07:51:36.979] Executing (profiled): Test Script 2 (python=C:\Users\E40114686\Documents\github_seq\daemon_scheduler\test2_project\.venv\Scripts\python.exe)
