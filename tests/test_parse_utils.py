@@ -21,7 +21,6 @@ from sequencer import (
     months_to_numbers,
     month_days_to_set,
     week_days_to_set,
-    max_day_for_month,
     parse_worker_setting,
 )
 
@@ -392,40 +391,6 @@ def test_week_days_to_set_day_name():
     assert week_days_to_set("monday") == {0}
 
 
-# ---------------------------------------------------------------------------
-# max_day_for_month
-# ---------------------------------------------------------------------------
-
-def test_max_day_for_month_february():
-    assert max_day_for_month(2) == 29
-
-
-def test_max_day_for_month_april():
-    assert max_day_for_month(4) == 30
-
-
-def test_max_day_for_month_june():
-    assert max_day_for_month(6) == 30
-
-
-def test_max_day_for_month_september():
-    assert max_day_for_month(9) == 30
-
-
-def test_max_day_for_month_november():
-    assert max_day_for_month(11) == 30
-
-
-def test_max_day_for_month_january():
-    assert max_day_for_month(1) == 31
-
-
-def test_max_day_for_month_march():
-    assert max_day_for_month(3) == 31
-
-
-def test_max_day_for_month_december():
-    assert max_day_for_month(12) == 31
 
 
 # ---------------------------------------------------------------------------

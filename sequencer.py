@@ -14,7 +14,7 @@ import threading
 import queue
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 _LIBS_DIR = Path(__file__).resolve().parent / "libs"
 _PROJECT_DIR = Path(__file__).resolve().parent
@@ -1045,12 +1045,6 @@ def week_days_to_set(value: Any) -> set[int] | None:
     return {_parse_one(p) for p in parts}
 
 
-def max_day_for_month(month: int) -> int:
-    if month == 2:
-        return 29
-    return calendar.monthrange(2025, month)[1]
-
-
 def validate_task(task: Any, index: int) -> dict[str, Any]:
     if not isinstance(task, dict):
         raise ValueError(f"Task #{index} is not a dictionary.")
@@ -1258,6 +1252,108 @@ def should_run(task: dict[str, Any], now: dt.datetime) -> bool:
     return elapsed % frequency_min == 0
 
 
+def _day_matches_filters(task: dict[str, Any], date: dt.date) -> bool:
+    months = task.get("_months")
+    if months and date.month not in months:
+        return False
+    month_day = task.get("_month_day")
+    week_day = task.get("_week_day")
+    if month_day is not None:
+        if date.day not in month_day:
+            return False
+    elif week_day is not None:
+        if date.weekday() not in week_day:
+            return False
+    return True
+
+
+def _next_from_times(task: dict[str, Any], times: list[tuple[int, int]], now: dt.datetime) -> dt.datetime | None:
+    sorted_times = sorted(times)
+    candidate_date = now.date()
+    for _ in range(366):
+        if not _day_matches_filters(task, candidate_date):
+            candidate_date += dt.timedelta(days=1)
+            continue
+        for h, m in sorted_times:
+            candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                    candidate_date.day, h, m)
+            if candidate > now:
+                return candidate
+        candidate_date += dt.timedelta(days=1)
+    return None
+
+
+def _next_from_frequency(task: dict[str, Any], freq: int, now: dt.datetime) -> dt.datetime | None:
+    start_hour = task.get("_start_hour", 0)
+    start_minute = task.get("_start_minute", 0)
+    end_hour = task.get("_end_hour")
+    end_minute = task.get("_end_minute", 0)
+    window_start = start_hour * 60 + start_minute
+    window_end = (end_hour * 60 + end_minute) if end_hour is not None else 1440
+    candidate_date = now.date()
+    for _ in range(366):
+        if not _day_matches_filters(task, candidate_date):
+            candidate_date += dt.timedelta(days=1)
+            continue
+        if candidate_date > now.date():
+            current_minutes = 0
+        else:
+            current_minutes = now.hour * 60 + now.minute
+        if current_minutes <= window_start:
+            candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                    candidate_date.day, start_hour, start_minute)
+            if candidate > now and window_start <= window_end:
+                return candidate
+            candidate_date += dt.timedelta(days=1)
+            continue
+        elapsed = current_minutes - window_start
+        remainder = elapsed % freq
+        next_offset = freq - remainder if remainder else freq
+        next_minute_of_day = current_minutes + next_offset
+        if next_minute_of_day <= window_end:
+            h, m = divmod(next_minute_of_day, 60)
+            candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                    candidate_date.day, h, m)
+            if candidate > now:
+                return candidate
+        candidate_date += dt.timedelta(days=1)
+    return None
+
+
+def _next_single_run(task: dict[str, Any], now: dt.datetime) -> dt.datetime | None:
+    start_hour = task.get("_start_hour", 0)
+    start_minute = task.get("_start_minute", 0)
+    candidate_date = now.date()
+    for _ in range(366):
+        if not _day_matches_filters(task, candidate_date):
+            candidate_date += dt.timedelta(days=1)
+            continue
+        candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                candidate_date.day, start_hour, start_minute)
+        if candidate > now:
+            return candidate
+        candidate_date += dt.timedelta(days=1)
+    return None
+
+
+def _next_fire_time_for_task(task: dict[str, Any], now: dt.datetime, paused_tasks: set[str]) -> dt.datetime | None:
+    key = task.get("id", "")
+    if key in paused_tasks:
+        return None
+    if task.get("_dependency_only"):
+        return None
+    times = task.get("_times")
+    if times:
+        return _next_from_times(task, times, now)
+    freq = task.get("_frequency_min")
+    if freq is not None:
+        return _next_from_frequency(task, freq, now)
+    start_hour = task.get("_start_hour")
+    if start_hour is not None:
+        return _next_single_run(task, now)
+    return now + dt.timedelta(minutes=1)
+
+
 def compute_next_wake_time(
     validated_tasks: list[dict[str, Any]],
     state: dict[str, Any],
@@ -1268,24 +1364,17 @@ def compute_next_wake_time(
 ) -> dt.datetime:
     """Return the earliest datetime at which the scheduler should next wake.
 
-    Scans forward minute-by-minute up to *max_horizon_minutes* and also
-    considers retry timers for failed tasks.  Falls back to
+    Computes each task's next fire time directly (no minute-by-minute scan)
+    and also considers retry timers for failed tasks.  Falls back to
     ``now + max_horizon_minutes`` when nothing is due sooner.
     """
     candidates: list[dt.datetime] = []
-    base = now.replace(second=0, microsecond=0)
 
-    # A. Next scheduled-task fire time
+    # A. Next scheduled-task fire time (direct calculation)
     for task in validated_tasks:
-        if task.get("_dependency_only"):
-            continue  # triggered by event, not by schedule
-        if task.get("id") in paused_tasks:
-            continue
-        for offset in range(1, max_horizon_minutes + 1):
-            candidate = base + dt.timedelta(minutes=offset)
-            if should_run(task, candidate):
-                candidates.append(candidate)
-                break
+        candidate = _next_fire_time_for_task(task, now, paused_tasks)
+        if candidate is not None:
+            candidates.append(candidate)
 
     # B. Retry timers for failed tasks
     retry_base = float(settings.get("retry_delay_seconds", 60))
@@ -1618,6 +1707,82 @@ def task_key(task: dict[str, Any]) -> str:
     return f"{task['name']}::{task['path']}"
 
 
+def _should_retry_now(
+    last_entry: Any,
+    retry_delay_seconds: float,
+    retry_max_delay_seconds: float,
+    now: dt.datetime,
+) -> bool:
+    """Check if a failed task's retry backoff has elapsed."""
+    if not (isinstance(last_entry, dict) and last_entry.get("outcome") == "failure"):
+        return False
+    last_run_str = last_entry.get("last_run", "")
+    try:
+        last_run_dt = dt.datetime.strptime(last_run_str, "%Y-%m-%d %H:%M:%S")
+        elapsed = (now - last_run_dt).total_seconds()
+        retry_count = last_entry.get("retry_count", 0)
+        delay = compute_retry_delay(retry_delay_seconds, retry_count, retry_max_delay_seconds)
+        return elapsed >= delay
+    except (ValueError, TypeError):
+        log(f"[Warning] _should_retry_now: malformed timestamp in state entry: {last_run_str!r}")
+        return False
+
+
+def _deps_satisfied(
+    task: dict[str, Any],
+    validated_tasks: list[dict[str, Any]],
+    last_triggered_slot: dict,
+    slot_key: str = "",
+    require_same_slot: bool = True,
+) -> bool:
+    """Check if all task dependencies have succeeded."""
+    for dep_name in task.get("_depends_on", []):
+        dep_key = next((task_key(t) for t in validated_tasks if t["name"] == dep_name), None)
+        if dep_key is None:
+            return False
+        dep_entry = last_triggered_slot.get(dep_key)
+        dep_succeeded = isinstance(dep_entry, dict) and dep_entry.get("outcome") == "success"
+        if not dep_succeeded:
+            return False
+        if require_same_slot and slot_key:
+            dep_in_slot = isinstance(dep_entry, dict) and dep_entry.get("slot") == slot_key
+            if not dep_in_slot:
+                return False
+    return True
+
+
+def _build_task_run(
+    task: dict[str, Any],
+    key: str,
+    config_path: Path,
+    profiling: dict,
+    max_workers: int,
+    default_worker_cost: int,
+    resolve_interpreter: Callable[[dict[str, Any], Path], str | None],
+    is_recovery: bool,
+    log_prefix: str = "",
+) -> dict[str, Any] | None:
+    """Validate and build a task_run dict. Returns None on failure (logs error)."""
+    script_path = (config_path.parent / task["path"]).resolve()
+    if not script_path.exists():
+        log(f"[Error] {log_prefix}Script not found for task `{task['name']}`: {script_path}")
+        return None
+    worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
+    if worker_cost > max_workers:
+        log(f"[Error] {log_prefix}Task `{task['name']}` requires worker_cost={worker_cost}, "
+            f"which exceeds max_workers={max_workers}.")
+        return None
+    return {
+        "key": key,
+        "task_name": task["name"],
+        "script_path": script_path,
+        "worker_cost": worker_cost,
+        "is_recovery": is_recovery,
+        "interpreter": resolve_interpreter(task, script_path),
+        "timeout_minutes": task.get("_timeout_minutes"),
+    }
+
+
 def run_scheduler_pass(
     config_path: Path,
     now: dt.datetime,
@@ -1819,23 +1984,12 @@ def run_scheduler_pass(
             clear_recovery_entry(key)
             continue
 
-        script_path = (config_path.parent / task["path"]).resolve()
-        if not script_path.exists():
-            log(
-                f"[Error] Recovery script not found for task `{task['name']}`: "
-                f"{script_path}"
-            )
-            had_error = True
-            clear_recovery_entry(key)
-            continue
-
-        worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
-        log(f"[Profile] Recovery task `{task['name']}` using dynamic cost={worker_cost}")
-        if worker_cost > max_workers:
-            log(
-                f"[Error] Recovery task `{task['name']}` requires "
-                f"worker_cost={worker_cost}, which exceeds max_workers={max_workers}."
-            )
+        task_run = _build_task_run(
+            task, key, config_path, profiling, max_workers,
+            default_worker_cost, _resolve_interpreter, is_recovery=True,
+            log_prefix="Recovery: ",
+        )
+        if task_run is None:
             had_error = True
             clear_recovery_entry(key)
             continue
@@ -1852,23 +2006,13 @@ def run_scheduler_pass(
         else:
             log(f"[Recovery] Re-queueing interrupted task `{task['name']}`.")
 
-        tasks_to_execute.append(
-            {
-                "key": key,
-                "task_name": task["name"],
-                "script_path": script_path,
-                "worker_cost": worker_cost,
-                "is_recovery": True,
-                "interpreter": _resolve_interpreter(task, script_path),
-                "timeout_minutes": task.get("_timeout_minutes"),
-            }
-        )
+        tasks_to_execute.append(task_run)
         scheduled_keys.add(key)
         recovered_keys.add(key)
 
     for task in validated_tasks:
         if task.get("_dependency_only"):
-            continue  # triggered by event, not by schedule
+            continue
         if not should_run(task, now):
             continue
 
@@ -1885,149 +2029,61 @@ def run_scheduler_pass(
 
         last_entry = last_triggered_slot.get(key)
         if get_last_slot(key) == slot_key:
-            # Allow retry if the previous run failed and retry_delay_seconds has elapsed.
-            is_failed = isinstance(last_entry, dict) and last_entry.get("outcome") == "failure"
-            if is_failed:
-                last_run_str = last_entry.get("last_run", "")
-                try:
-                    last_run_dt = dt.datetime.strptime(last_run_str, "%Y-%m-%d %H:%M:%S")
-                    elapsed = (now - last_run_dt).total_seconds()
-                    retry_count = last_entry.get("retry_count", 0)
-                    delay = compute_retry_delay(retry_delay_seconds, retry_count, retry_max_delay_seconds)
-                    if elapsed < delay:
-                        continue
-                    log(f"[Retry] {task['name']} — attempt #{retry_count + 1} after {delay:.0f}s backoff.")
-                except (ValueError, TypeError):
-                    pass  # Malformed timestamp; fall through and retry.
+            if _should_retry_now(last_entry, retry_delay_seconds, retry_max_delay_seconds, now):
+                log(f"[Retry] {task['name']} — attempt #{last_entry.get('retry_count', 0) + 1} after backoff.")
             else:
                 log(f"[Skip] {task['name']} already triggered in slot {slot_key}.")
                 continue
 
-        # Check task dependencies.
-        deps = task.get("_depends_on", [])
-        if deps:
-            all_deps_ok = True
-            for dep_name in deps:
-                dep_key = next((task_key(t) for t in validated_tasks if t["name"] == dep_name), None)
-                if dep_key is None:
-                    all_deps_ok = False
-                    break
-                dep_entry = last_triggered_slot.get(dep_key)
-                dep_in_slot = isinstance(dep_entry, dict) and dep_entry.get("slot") == slot_key
-                dep_succeeded = isinstance(dep_entry, dict) and dep_entry.get("outcome") == "success"
-                if not (dep_in_slot and dep_succeeded):
-                    all_deps_ok = False
-                    break
-            if not all_deps_ok:
-                continue
+        if not _deps_satisfied(task, validated_tasks, last_triggered_slot, slot_key):
+            continue
 
         if key in paused_tasks_set:
             continue
 
-        script_path = (config_path.parent / task["path"]).resolve()
-        if not script_path.exists():
-            log(f"[Error] Script not found for task `{task['name']}`: {script_path}")
-            had_error = True
-            mark_slot_consumed_without_run(key, slot_key)
-            scheduled_keys.add(key)
-            continue
-
-        worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
-        log(f"[Profile] {task['name']} using dynamic cost={worker_cost}")
-        if worker_cost > max_workers:
-            log(
-                f"[Error] Task `{task['name']}` requires worker_cost={worker_cost}, "
-                f"which exceeds max_workers={max_workers}."
-            )
-            had_error = True
-            mark_slot_consumed_without_run(key, slot_key)
-            scheduled_keys.add(key)
-            continue
-
-        tasks_to_execute.append(
-            {
-                "key": key,
-                "task_name": task["name"],
-                "script_path": script_path,
-                "worker_cost": worker_cost,
-                "is_recovery": False,
-                "interpreter": _resolve_interpreter(task, script_path),
-                "timeout_minutes": task.get("_timeout_minutes"),
-            }
+        task_run = _build_task_run(
+            task, key, config_path, profiling, max_workers,
+            default_worker_cost, _resolve_interpreter, is_recovery=False,
         )
+        if task_run is None:
+            had_error = True
+            mark_slot_consumed_without_run(key, slot_key)
+            scheduled_keys.add(key)
+            continue
+
+        tasks_to_execute.append(task_run)
         scheduled_keys.add(key)
 
     # --- Retry pass: re-queue failed tasks whose retry_delay_seconds has elapsed ---
     for task in validated_tasks:
         if task.get("_dependency_only"):
-            continue  # triggered by event, not by schedule
+            continue
         key = task_key(task)
         if key in scheduled_keys:
             continue
         last_entry = last_triggered_slot.get(key)
-        if not (isinstance(last_entry, dict) and last_entry.get("outcome") == "failure"):
+        if not _should_retry_now(last_entry, retry_delay_seconds, retry_max_delay_seconds, now):
             continue
-        last_run_str = last_entry.get("last_run", "")
-        try:
-            last_run_dt = dt.datetime.strptime(last_run_str, "%Y-%m-%d %H:%M:%S")
-            elapsed = (now - last_run_dt).total_seconds()
-            retry_count = last_entry.get("retry_count", 0)
-            delay = compute_retry_delay(retry_delay_seconds, retry_count, retry_max_delay_seconds)
-            if elapsed < delay:
-                continue
-        except (ValueError, TypeError):
-            pass  # Malformed timestamp; fall through and retry.
 
-        # Check task dependencies.
-        deps = task.get("_depends_on", [])
-        if deps:
-            all_deps_ok = True
-            for dep_name in deps:
-                dep_key = next((task_key(t) for t in validated_tasks if t["name"] == dep_name), None)
-                if dep_key is None:
-                    all_deps_ok = False
-                    break
-                dep_entry = last_triggered_slot.get(dep_key)
-                dep_succeeded = isinstance(dep_entry, dict) and dep_entry.get("outcome") == "success"
-                if not dep_succeeded:
-                    all_deps_ok = False
-                    break
-            if not all_deps_ok:
-                continue
+        if not _deps_satisfied(task, validated_tasks, last_triggered_slot, require_same_slot=False):
+            continue
 
         if key in paused_tasks_set:
             continue
 
-        script_path = (config_path.parent / task["path"]).resolve()
-        if not script_path.exists():
-            log(f"[Error] Script not found for task `{task['name']}`: {script_path}")
-            had_error = True
-            continue
-
-        worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
-        log(f"[Profile] Retry task `{task['name']}` using dynamic cost={worker_cost}")
-        if worker_cost > max_workers:
-            log(
-                f"[Error] Task `{task['name']}` requires worker_cost={worker_cost}, "
-                f"which exceeds max_workers={max_workers}."
-            )
+        task_run = _build_task_run(
+            task, key, config_path, profiling, max_workers,
+            default_worker_cost, _resolve_interpreter, is_recovery=False,
+            log_prefix="Retry: ",
+        )
+        if task_run is None:
             had_error = True
             continue
 
         retry_count = last_entry.get("retry_count", 0)
         delay = compute_retry_delay(retry_delay_seconds, retry_count, retry_max_delay_seconds)
         log(f"[Retry] {task['name']} — attempt #{retry_count + 1} after {delay:.0f}s backoff.")
-        tasks_to_execute.append(
-            {
-                "key": key,
-                "task_name": task["name"],
-                "script_path": script_path,
-                "worker_cost": worker_cost,
-                "is_recovery": False,
-                "interpreter": _resolve_interpreter(task, script_path),
-                "timeout_minutes": task.get("_timeout_minutes"),
-            }
-        )
+        tasks_to_execute.append(task_run)
         scheduled_keys.add(key)
 
     # --- Run-now pass: queue tasks triggered on-demand from the monitor ---
@@ -2042,33 +2098,17 @@ def run_scheduler_pass(
                 log(f"[Skip] Run-now ignored for paused task `{task['name']}`. Unpause it first.")
                 continue
 
-            script_path = (config_path.parent / task["path"]).resolve()
-            if not script_path.exists():
-                log(f"[Error] Script not found for task `{task['name']}`: {script_path}")
-                had_error = True
-                continue
-
-            worker_cost = resolve_dynamic_worker_cost(key, profiling, max_workers, default_worker_cost)
-            log(f"[Run Now] {task['name']} — triggered from monitor (cost={worker_cost})")
-            if worker_cost > max_workers:
-                log(
-                    f"[Error] Task `{task['name']}` requires worker_cost={worker_cost}, "
-                    f"which exceeds max_workers={max_workers}."
-                )
-                had_error = True
-                continue
-
-            tasks_to_execute.append(
-                {
-                    "key": key,
-                    "task_name": task["name"],
-                    "script_path": script_path,
-                    "worker_cost": worker_cost,
-                    "is_recovery": False,
-                    "interpreter": _resolve_interpreter(task, script_path),
-                    "timeout_minutes": task.get("_timeout_minutes"),
-                }
+            task_run = _build_task_run(
+                task, key, config_path, profiling, max_workers,
+                default_worker_cost, _resolve_interpreter, is_recovery=False,
+                log_prefix="Run Now: ",
             )
+            if task_run is None:
+                had_error = True
+                continue
+
+            log(f"[Run Now] {task['name']} — triggered from monitor (cost={task_run['worker_cost']})")
+            tasks_to_execute.append(task_run)
             scheduled_keys.add(key)
 
     thread_worker_count = min(max_workers, len(tasks_to_execute)) if use_workers else 1
