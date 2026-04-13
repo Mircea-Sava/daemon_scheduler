@@ -183,10 +183,21 @@ def test_end_minute_defaults_to_zero():
 # ---------------------------------------------------------------------------
 # 21. test_start_hour_greater_than_end_hour_raises
 # ---------------------------------------------------------------------------
-def test_start_hour_greater_than_end_hour_raises():
+def test_start_hour_greater_than_end_hour_allows_overnight():
+    """start_hour > end_hour is valid — it means an overnight window."""
+    result = validate_task(
+        {"id": "t1", "path": "s.py", "start_hour": 22, "end_hour": 6, "frequency_min": 30}, 0
+    )
+    assert result["_start_hour"] == 22
+    assert result["_end_hour"] == 6
+
+
+def test_same_hour_start_minute_after_end_minute_raises():
+    """When hours are equal, start_minute must be <= end_minute."""
     with pytest.raises(ValueError):
         validate_task(
-            {"id": "t1", "path": "s.py", "start_hour": 18, "end_hour": 9}, 0
+            {"id": "t1", "path": "s.py", "start_hour": 9, "start_minute": 30,
+             "end_hour": 9, "end_minute": 15}, 0
         )
 
 

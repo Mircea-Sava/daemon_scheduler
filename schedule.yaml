@@ -50,6 +50,13 @@
 #    end_hour: 18
 #    end_minute: 0
 #
+#  Run every 30 min overnight from 22:00 to 06:00 (wraps midnight):
+#  - id: "test"
+#    path: "scripts/test.py"
+#    start_hour: 22
+#    frequency_min: 30
+#    end_hour: 6
+#
 #  Run every 30 min non-stop on weekdays (no end_hour):
 #  - id: "test"
 #    path: "scripts/test.py"

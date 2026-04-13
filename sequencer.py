@@ -1139,8 +1139,9 @@ def validate_task(task: Any, index: int) -> dict[str, Any]:
 
     if (task_copy["_start_hour"] is not None
             and task_copy["_end_hour"] is not None
-            and task_copy["_start_hour"] > task_copy["_end_hour"]):
-        raise ValueError(f"Task `{name}`: `start_hour` must be <= `end_hour`.")
+            and task_copy["_start_hour"] == task_copy["_end_hour"]
+            and task_copy["_start_minute"] > task_copy["_end_minute"]):
+        raise ValueError(f"Task `{name}`: start time must be before end time when hours are equal.")
 
     # times: optional, list of "HH:MM" strings for running at multiple specific times
     raw_times = task.get("times")
@@ -1240,15 +1241,30 @@ def should_run(task: dict[str, Any], now: dt.datetime) -> bool:
     window_start = start_hour * 60 + start_minute
     current_minutes = now.hour * 60 + now.minute
 
-    if current_minutes < window_start:
-        return False
-
     if end_hour is not None:
         window_end = end_hour * 60 + end_minute
-        if current_minutes > window_end:
-            return False
+        wraps = window_start > window_end  # e.g., 22:00 to 06:00
 
-    elapsed = current_minutes - window_start
+        if wraps:
+            # Overnight window: in-window if current >= start OR current <= end
+            if current_minutes < window_start and current_minutes > window_end:
+                return False
+            # For elapsed calc, shift post-midnight times by +1440
+            if current_minutes < window_start:
+                elapsed = (1440 - window_start) + current_minutes
+            else:
+                elapsed = current_minutes - window_start
+        else:
+            # Normal daytime window
+            if current_minutes < window_start or current_minutes > window_end:
+                return False
+            elapsed = current_minutes - window_start
+    else:
+        # No end_hour: just check we're past start
+        if current_minutes < window_start:
+            return False
+        elapsed = current_minutes - window_start
+
     return elapsed % frequency_min == 0
 
 
@@ -1290,6 +1306,8 @@ def _next_from_frequency(task: dict[str, Any], freq: int, now: dt.datetime) -> d
     end_minute = task.get("_end_minute", 0)
     window_start = start_hour * 60 + start_minute
     window_end = (end_hour * 60 + end_minute) if end_hour is not None else 1440
+    wraps = end_hour is not None and window_start > window_end
+
     candidate_date = now.date()
     for _ in range(366):
         if not _day_matches_filters(task, candidate_date):
@@ -1299,23 +1317,73 @@ def _next_from_frequency(task: dict[str, Any], freq: int, now: dt.datetime) -> d
             current_minutes = 0
         else:
             current_minutes = now.hour * 60 + now.minute
-        if current_minutes <= window_start:
-            candidate = dt.datetime(candidate_date.year, candidate_date.month,
-                                    candidate_date.day, start_hour, start_minute)
-            if candidate > now and window_start <= window_end:
-                return candidate
-            candidate_date += dt.timedelta(days=1)
-            continue
-        elapsed = current_minutes - window_start
-        remainder = elapsed % freq
-        next_offset = freq - remainder if remainder else freq
-        next_minute_of_day = current_minutes + next_offset
-        if next_minute_of_day <= window_end:
-            h, m = divmod(next_minute_of_day, 60)
-            candidate = dt.datetime(candidate_date.year, candidate_date.month,
-                                    candidate_date.day, h, m)
-            if candidate > now:
-                return candidate
+
+        if wraps:
+            # Overnight window (e.g., 22:00 to 06:00).
+            # The window spans window_start..1439 on this day and 0..window_end on the next day.
+            total_window = (1440 - window_start) + window_end
+
+            if current_minutes <= window_end:
+                # We're in the post-midnight portion of a window that started yesterday.
+                elapsed = (1440 - window_start) + current_minutes
+                remainder = elapsed % freq
+                next_offset = freq - remainder if remainder else freq
+                next_abs = elapsed + next_offset
+                if next_abs <= total_window:
+                    next_minute_of_day = (window_start + next_abs) % 1440
+                    h, m = divmod(next_minute_of_day, 60)
+                    candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                            candidate_date.day, h, m)
+                    if candidate > now:
+                        return candidate
+            # Check the pre-midnight portion starting on this day.
+            if current_minutes < window_start:
+                # Haven't reached window_start yet today — first run is at window_start.
+                candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                        candidate_date.day, start_hour, start_minute)
+                if candidate > now:
+                    return candidate
+            if current_minutes >= window_start:
+                # In the pre-midnight portion.
+                elapsed = current_minutes - window_start
+                remainder = elapsed % freq
+                next_offset = freq - remainder if remainder else freq
+                next_abs = elapsed + next_offset
+                if next_abs <= total_window:
+                    next_minute_of_day = window_start + next_abs
+                    if next_minute_of_day >= 1440:
+                        # Crosses into next day.
+                        next_minute_of_day -= 1440
+                        next_date = candidate_date + dt.timedelta(days=1)
+                        h, m = divmod(next_minute_of_day, 60)
+                        candidate = dt.datetime(next_date.year, next_date.month,
+                                                next_date.day, h, m)
+                    else:
+                        h, m = divmod(next_minute_of_day, 60)
+                        candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                                candidate_date.day, h, m)
+                    if candidate > now:
+                        return candidate
+        else:
+            # Normal daytime window.
+            if current_minutes <= window_start:
+                candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                        candidate_date.day, start_hour, start_minute)
+                if candidate > now and window_start <= window_end:
+                    return candidate
+                candidate_date += dt.timedelta(days=1)
+                continue
+            elapsed = current_minutes - window_start
+            remainder = elapsed % freq
+            next_offset = freq - remainder if remainder else freq
+            next_minute_of_day = current_minutes + next_offset
+            if next_minute_of_day <= window_end:
+                h, m = divmod(next_minute_of_day, 60)
+                candidate = dt.datetime(candidate_date.year, candidate_date.month,
+                                        candidate_date.day, h, m)
+                if candidate > now:
+                    return candidate
+
         candidate_date += dt.timedelta(days=1)
     return None
 

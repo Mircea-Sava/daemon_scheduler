@@ -251,3 +251,84 @@ def test_frequency_1_min():
 def test_midnight_start_hour_0():
     now = BASE.replace(hour=0, minute=0)
     assert should_run(_task(_start_hour=0, _start_minute=0), now) is True
+
+
+# ---------------------------------------------------------------------------
+# Overnight window tests (start_hour > end_hour)
+# ---------------------------------------------------------------------------
+
+def test_overnight_in_pre_midnight_portion():
+    """22:00-06:00 every 30 min — 23:00 should run."""
+    now = BASE.replace(hour=23, minute=0)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is True
+
+
+def test_overnight_in_post_midnight_portion():
+    """22:00-06:00 every 30 min — 02:00 should run."""
+    now = BASE.replace(hour=2, minute=0)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is True
+
+
+def test_overnight_at_start():
+    """22:00-06:00 every 30 min — 22:00 should run."""
+    now = BASE.replace(hour=22, minute=0)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is True
+
+
+def test_overnight_at_end():
+    """22:00-06:00 every 30 min — 06:00 should run."""
+    now = BASE.replace(hour=6, minute=0)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is True
+
+
+def test_overnight_outside_window_morning():
+    """22:00-06:00 — 10:00 should NOT run."""
+    now = BASE.replace(hour=10, minute=0)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is False
+
+
+def test_overnight_outside_window_afternoon():
+    """22:00-06:00 — 15:00 should NOT run."""
+    now = BASE.replace(hour=15, minute=0)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is False
+
+
+def test_overnight_off_frequency():
+    """22:00-06:00 every 30 min — 22:15 should NOT run (not on the 30-min boundary)."""
+    now = BASE.replace(hour=22, minute=15)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is False
+
+
+def test_overnight_post_midnight_on_frequency():
+    """22:00-06:00 every 60 min — 01:00 should run (elapsed=180, 180%60==0)."""
+    now = BASE.replace(hour=1, minute=0)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=60)
+    assert should_run(t, now) is True
+
+
+def test_overnight_post_midnight_off_frequency():
+    """22:00-06:00 every 60 min — 01:30 should NOT run."""
+    now = BASE.replace(hour=1, minute=30)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=60)
+    assert should_run(t, now) is False
+
+
+def test_overnight_just_past_end():
+    """22:00-06:00 — 06:01 should NOT run."""
+    now = BASE.replace(hour=6, minute=1)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is False
+
+
+def test_overnight_just_before_start():
+    """22:00-06:00 — 21:59 should NOT run."""
+    now = BASE.replace(hour=21, minute=59)
+    t = _task(_start_hour=22, _end_hour=6, _frequency_min=30)
+    assert should_run(t, now) is False
