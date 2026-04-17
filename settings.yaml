@@ -4,7 +4,7 @@ settings:
   
   use_workers: 1                   # 0 = sequential, 1 = parallel (auto-profile via psutil)
   max_workers: 80                  # 80 = reserve 80% capacity for scripts, 20% for OS
-  default_worker_cost: 80          # Default cost for new/unprofiled scripts
+  default_worker_cost: 100         # Default cost for new/unprofiled scripts (fallback: 100 if unset)
   
   log_task_output: true            # true = capture and log script, false = discard
   log_keep_count: 14               # keep this many daily log files, delete oldest beyond this
